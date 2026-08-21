@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "twenty": {
+      "url": "https://crm.orazen.online/mcp",
+      "transport": "streamable-http",
+      "description": "Twenty CRM instance for Orazen"
+    }
+  }
+}
