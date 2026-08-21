@@ -18,7 +18,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-BASE = Path('/home/tarun/orazen-trading-engine/web')
+BASE = Path(__file__).parent
 (BASE / 'static').mkdir(exist_ok=True)
 
 TWENTY_WEBHOOK_SECRET = os.getenv('TWENTY_WEBHOOK_SECRET', '')
@@ -28,8 +28,10 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', '5595319916')
 BETA_LEADS = BASE / 'static' / 'beta_leads.jsonl'
 
 # Logging
+LOG_FILE = BASE.parent / 'webhook' / 'events.log'
+LOG_FILE.parent.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
-    filename='/home/tarun/orazen-trading-engine/webhook/events.log',
+    filename=str(LOG_FILE),
     level=logging.INFO,
     format='%(message)s',
 )
