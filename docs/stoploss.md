@@ -10,7 +10,7 @@ Most of the strategy files already include the optimal `stoploss` value.
     All stoploss properties mentioned in this file can be set in the Strategy, or in the configuration.  
     <ins>Configuration values will override the strategy values.</ins>
 
-## Stop Loss On-Exchange/Freqtrade
+## Stop Loss On-Exchange/Orazen
 
 Those stoploss modes can be *on exchange* or *off exchange*.
 
@@ -37,7 +37,7 @@ The Order-type will be ignored if only one mode is available.
 !!! Warning "Loose stoploss"
     Using stoploss on exchange with a very wide stoploss (e.g. -1) may fail to place the stoploss order on exchange due to exchange limitations.
     In that case, the bot will fallback to using the `emergency_exit` order type to place a market order as placing the stoploss order failed.
-    Freqtrade currently does not implement a limitation to avoid this situation, so please ensure your stoploss values are within reasonable limits for your exchange or disable stoploss on exchange.
+    Orazen currently does not implement a limitation to avoid this situation, so please ensure your stoploss values are within reasonable limits for your exchange or disable stoploss on exchange.
 
 ### Which order type is used for stoploss on exchange?
 
@@ -83,14 +83,14 @@ This same logic will reapply a stoploss order on the exchange should you cancel 
 
 !!! Warning "Only applies to futures"
     `stoploss_price_type` only applies to futures markets (on exchanges where it's available).  
-    Freqtrade will perform a validation of this setting on startup, failing to start if an invalid setting for your exchange has been selected.
+    Orazen will perform a validation of this setting on startup, failing to start if an invalid setting for your exchange has been selected.
     Supported price types are gonna differs between each exchanges. Please check with your exchange on which price types it supports.  
     In spot markets, this setting is ignored and not validated, as most exchanges only support one price type for stoploss orders on spot markets.
 
 Stoploss on exchange on futures markets can trigger on different price types.
 The naming for these prices in exchange terminology often varies, but is usually something around "last" (or "contract price" ), "mark" and "index".
 
-Acceptable values for this setting are `"last"`, `"mark"` and `"index"` - which freqtrade will transfer automatically to the corresponding API type, and place the [stoploss on exchange](#stoploss_on_exchange-and-stoploss_on_exchange_limit_ratio) order correspondingly.
+Acceptable values for this setting are `"last"`, `"mark"` and `"index"` - which orazen will transfer automatically to the corresponding API type, and place the [stoploss on exchange](#stoploss_on_exchange-and-stoploss_on_exchange_limit_ratio) order correspondingly.
 
 ### force_exit
 

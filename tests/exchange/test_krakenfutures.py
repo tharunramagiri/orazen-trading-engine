@@ -7,19 +7,19 @@ from unittest.mock import MagicMock, PropertyMock
 import ccxt
 import pytest
 
-from freqtrade.enums import MarginMode, TradingMode
-from freqtrade.exceptions import (
+from orazen.enums import MarginMode, TradingMode
+from orazen.exceptions import (
     DDosProtection,
     ExchangeError,
     InvalidOrderException,
     OperationalException,
     TemporaryError,
 )
-from freqtrade.exchange.krakenfutures import Krakenfutures
+from orazen.exchange.krakenfutures import Krakenfutures
 from tests.conftest import EXMS, get_patched_exchange
 
 
-ExchangeBase = Krakenfutures.__mro__[1]  # freqtrade.exchange.exchange.Exchange
+ExchangeBase = Krakenfutures.__mro__[1]  # orazen.exchange.exchange.Exchange
 
 
 # --- _ft_has and OHLCV tests ---

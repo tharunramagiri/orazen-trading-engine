@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from freqtrade.enums import MarginMode, TradingMode
+from orazen.enums import MarginMode, TradingMode
 from tests.conftest import EXMS, get_patched_exchange
 
 

@@ -1,16 +1,16 @@
-# Freqtrade FAQ
+# Orazen FAQ
 
 ## Supported Markets
 
-Freqtrade supports spot trading, as well as futures trading for some selected exchanges. Please refer to the [documentation start page](index.md#supported-futures-exchanges) for an up-to-date list of supported exchanges.
+Orazen supports spot trading, as well as futures trading for some selected exchanges. Please refer to the [documentation start page](index.md#supported-futures-exchanges) for an up-to-date list of supported exchanges.
 
 ### Can my bot open short positions?
 
-Freqtrade can open short positions in futures markets.
+Orazen can open short positions in futures markets.
 This requires the strategy to be made for this - and `"trading_mode": "futures"` in the configuration.
 Please make sure to read the [relevant documentation page](leverage.md) first.
 
-In spot markets, you can in some cases use leveraged spot tokens, which reflect an inverted pair (eg. BTCUP/USD, BTCDOWN/USD, ETHBULL/USD, ETHBEAR/USD,...) which can be traded with Freqtrade.
+In spot markets, you can in some cases use leveraged spot tokens, which reflect an inverted pair (eg. BTCUP/USD, BTCDOWN/USD, ETHBULL/USD, ETHBEAR/USD,...) which can be traded with Orazen.
 
 ### Can my bot trade options or futures?
 
@@ -18,18 +18,18 @@ Futures trading is supported for selected exchanges. Please refer to the [docume
 
 ## Beginner Tips & Tricks
 
-* When you work with your strategy & hyperopt file you should use a proper code editor like VSCode or PyCharm. A good code editor will provide syntax highlighting as well as line numbers, making it easy to find syntax errors (most likely pointed out by Freqtrade during startup).
+* When you work with your strategy & hyperopt file you should use a proper code editor like VSCode or PyCharm. A good code editor will provide syntax highlighting as well as line numbers, making it easy to find syntax errors (most likely pointed out by Orazen during startup).
 
-## Freqtrade common questions
+## Orazen common questions
 
-### Can freqtrade open multiple positions on the same pair in parallel?
+### Can orazen open multiple positions on the same pair in parallel?
 
-No. Freqtrade will only open one position per pair at a time.
+No. Orazen will only open one position per pair at a time.
 You can however use the [`adjust_trade_position()` callback](strategy-callbacks.md#adjust-trade-position) to adjust an open position.
 
 Backtesting provides an option for this in `--eps` - however this is only there to highlight "hidden" signals, and will not work in live.
 
-### Does freqtrade support sandbox accounts?
+### Does orazen support sandbox accounts?
 
 No, but you can use dry-run mode to simulate trading without risking real funds.
 
@@ -38,7 +38,7 @@ These markets usually have different order books, liquidity and trading behaviou
 
 ### The bot does not start
 
-Running the bot with `freqtrade trade --config config.json` shows the output `freqtrade: command not found`.
+Running the bot with `orazen trade --config config.json` shows the output `orazen: command not found`.
 
 This could be caused by the following reasons:
 
@@ -84,16 +84,16 @@ As COIN is trading in full lot sizes (1COIN steps), you cannot sell 0.9 COIN (or
 
 This is not a bot-problem, but will also happen while manual trading.
 
-While freqtrade can handle this (it'll sell 99 COIN), fees are often below the minimum tradable lot-size (you can only trade full COIN, not 0.9 COIN).
-Leaving the dust (0.9 COIN) on the exchange makes usually sense, as the next time freqtrade buys COIN, it'll eat into the remaining small balance, this time selling everything it bought, and therefore slowly declining the dust balance (although it most likely will never reach exactly 0).
+While orazen can handle this (it'll sell 99 COIN), fees are often below the minimum tradable lot-size (you can only trade full COIN, not 0.9 COIN).
+Leaving the dust (0.9 COIN) on the exchange makes usually sense, as the next time orazen buys COIN, it'll eat into the remaining small balance, this time selling everything it bought, and therefore slowly declining the dust balance (although it most likely will never reach exactly 0).
 
 Where possible (e.g. on binance), the use of the exchange's dedicated fee currency will fix this.
-On binance, it's sufficient to have BNB in your account, and have "Pay fees in BNB" enabled in your profile. Your BNB balance will slowly decline (as it's used to pay fees) - but you'll no longer encounter dust (Freqtrade will include the fees in the profit calculations).
+On binance, it's sufficient to have BNB in your account, and have "Pay fees in BNB" enabled in your profile. Your BNB balance will slowly decline (as it's used to pay fees) - but you'll no longer encounter dust (Orazen will include the fees in the profit calculations).
 Other exchanges don't offer such possibilities, where it's simply something you'll have to accept or move to a different exchange.
 
 ### I deposited more funds to the exchange, but my bot doesn't recognize this
 
-Freqtrade will update the exchange balance when necessary (Before placing an order).
+Orazen will update the exchange balance when necessary (Before placing an order).
 RPC calls (Telegram's `/balance`, API calls to `/balance`) can trigger an update at max. once per hour.
 
 If `adjust_trade_position` is enabled (and the bot has open trades eligible for position adjustments) - then the wallets will be refreshed once per hour.
@@ -101,7 +101,7 @@ To force an immediate update, you can use `/reload_config` - which will restart 
 
 ### I want to use incomplete candles
 
-Freqtrade will not provide incomplete candles to strategies. Using incomplete candles will lead to repainting and consequently to strategies with "ghost" buys, which are impossible to both backtest, and verify after they happened.
+Orazen will not provide incomplete candles to strategies. Using incomplete candles will lead to repainting and consequently to strategies with "ghost" buys, which are impossible to both backtest, and verify after they happened.
 
 You can use "current" market data by using the [dataprovider](strategy-customization.md#orderbookpair-maximum)'s orderbook or ticker methods - which however cannot be used during backtesting.
 
@@ -111,20 +111,20 @@ You can use the `/stopentry` command in Telegram to prevent future trade entry, 
 
 ### I sold the bot's capital and now there's errors in the log
 
-Freqtrade assumes that the trades it opens are managed only though the bot.  
-If you happen to (accidentally) sell the bot's capital, freqtrade will try to recover by trying to re-find on-exchange orders.
+Orazen assumes that the trades it opens are managed only though the bot.  
+If you happen to (accidentally) sell the bot's capital, orazen will try to recover by trying to re-find on-exchange orders.
 
-This is a best-effort approach, and will not work in all cases, especially when using order types that are not supported by freqtrade (OCO, iceberg, etc.), or when working with older trades (where the exchange no longer provides full order information).
+This is a best-effort approach, and will not work in all cases, especially when using order types that are not supported by orazen (OCO, iceberg, etc.), or when working with older trades (where the exchange no longer provides full order information).
 The exact limits will vary between exchanges - with the details usually being documented in the exchange's API documentation.
 
 ### I want to run multiple bots on the same machine
 
-Please look at the [advanced setup documentation Page](advanced-setup.md#running-multiple-instances-of-freqtrade).
+Please look at the [advanced setup documentation Page](advanced-setup.md#running-multiple-instances-of-orazen).
 
 ### I'm getting "Impossible to load Strategy" when starting the bot
 
 This error message is shown when the bot cannot load the strategy.
-Usually, you can use `freqtrade list-strategies` to list all available strategies. 
+Usually, you can use `orazen list-strategies` to list all available strategies. 
 The output of this command will also include a status column, showing if the strategy can be loaded.
 
 Please check the following:
@@ -142,7 +142,7 @@ On low volume pairs, this is a rather common occurrence.
 
 If this happens for all pairs in the pairlist, this might indicate a recent exchange downtime. Please check your exchange's public channels for details.
 
-Irrespectively of the reason, Freqtrade will fill up these candles with "empty" candles, where open, high, low and close are set to the previous candle close - and volume is empty. In a chart, this will look like a `_` - and is aligned with how exchanges usually represent 0 volume candles.
+Irrespectively of the reason, Orazen will fill up these candles with "empty" candles, where open, high, low and close are set to the previous candle close - and volume is empty. In a chart, this will look like a `_` - and is aligned with how exchanges usually represent 0 volume candles.
 
 ### I'm getting "Price jump between 2 candles detected"
 
@@ -157,7 +157,7 @@ To reset the bot's database, you can either delete the database (by default `tra
 ### I'm getting "Outdated history for pair xxx" in the log
 
 The bot is trying to tell you that it got an outdated last candle (not the last complete candle).
-As a consequence, Freqtrade will not enter a trade for this pair - as trading on old information is usually not what is desired.
+As a consequence, Orazen will not enter a trade for this pair - as trading on old information is usually not what is desired.
 
 This warning can point to one of the below problems:
 
@@ -171,7 +171,7 @@ This warning can point to one of the below problems:
 This is an informational message that the bot tried to use candles from the websocket, but the exchange didn't provide the right information.
 This can happen if there was an interruption to the websocket connection - or if the pair didn't have any trades happen in the timeframe you are using.
 
-Freqtrade will handle this gracefully by falling back to the REST api.
+Orazen will handle this gracefully by falling back to the REST api.
 While this makes the iteration slightly slower (due to the REST Api call) - it will not cause any problems to the bot's operation.
 
 ### I'm getting the "Exchange XXX does not support market orders." message and cannot run my strategy
@@ -199,26 +199,26 @@ Futures will usually have to be enabled specifically.
 
 ### How do I search the bot logs for something?
 
-By default, the bot writes its log into stderr stream. This is implemented this way so that you can easily separate the bot's diagnostics messages from Backtesting, Edge and Hyperopt results, output from other various Freqtrade utility sub-commands, as well as from the output of your custom `print()`'s you may have inserted into your strategy. So if you need to search the log messages with the grep utility, you need to redirect stderr to stdout and disregard stdout.
+By default, the bot writes its log into stderr stream. This is implemented this way so that you can easily separate the bot's diagnostics messages from Backtesting, Edge and Hyperopt results, output from other various Orazen utility sub-commands, as well as from the output of your custom `print()`'s you may have inserted into your strategy. So if you need to search the log messages with the grep utility, you need to redirect stderr to stdout and disregard stdout.
 
 * In unix shells, this normally can be done as simple as:
 ```shell
-$ freqtrade --some-options 2>&1 >/dev/null | grep 'something'
+$ orazen --some-options 2>&1 >/dev/null | grep 'something'
 ```
 (note, `2>&1` and `>/dev/null` should be written in this order)
 
 * Bash interpreter also supports so called process substitution syntax, you can grep the log for a string with it as:
 ```shell
-$ freqtrade --some-options 2> >(grep 'something') >/dev/null
+$ orazen --some-options 2> >(grep 'something') >/dev/null
 ```
 or
 ```shell
-$ freqtrade --some-options 2> >(grep -v 'something' 1>&2)
+$ orazen --some-options 2> >(grep -v 'something' 1>&2)
 ```
 
-* You can also write the copy of Freqtrade log messages to a file with the `--logfile` option:
+* You can also write the copy of Orazen log messages to a file with the `--logfile` option:
 ```shell
-$ freqtrade --logfile /path/to/mylogfile.log --some-options
+$ orazen --logfile /path/to/mylogfile.log --some-options
 ```
 and then grep it as:
 ```shell
@@ -230,14 +230,14 @@ $ tail -f /path/to/mylogfile.log | grep 'something'
 ```
 from a separate terminal window.
 
-On Windows, the `--logfile` option is also supported by Freqtrade and you can use the `findstr` command to search the log for the string of interest:
+On Windows, the `--logfile` option is also supported by Orazen and you can use the `findstr` command to search the log for the string of interest:
 ```
 > type \path\to\mylogfile.log | findstr "something"
 ```
 
 ## Hyperopt module
 
-### Why does freqtrade not have GPU support?
+### Why does orazen not have GPU support?
 
 First of all, most indicator libraries don't have GPU support - as such, there would be little benefit for indicator calculations.
 The GPU improvements would only apply to pandas-native calculations - or ones written by yourself.
@@ -263,12 +263,12 @@ Since hyperopt uses Bayesian search, running for too many epochs may not produce
 It's therefore recommended to run between 500-1000 epochs over and over until you hit at least 10000 epochs in total (or are satisfied with the result). You can best judge by looking at the results - if the bot keeps discovering better strategies, it's best to keep on going.
 
 ```bash
-freqtrade hyperopt --hyperopt-loss SharpeHyperOptLossDaily --strategy SampleStrategy -e 1000
+orazen hyperopt --hyperopt-loss SharpeHyperOptLossDaily --strategy SampleStrategy -e 1000
 ```
 
 ### Why does it take a long time to run hyperopt?
 
-* Discovering a great strategy with Hyperopt takes time. Study www.freqtrade.io, the Freqtrade Documentation page, join the Freqtrade [discord community](https://discord.gg/p7nuUNVfP7). While you patiently wait for the most advanced, free crypto bot in the world, to hand you a possible golden strategy specially designed just for you.
+* Discovering a great strategy with Hyperopt takes time. Study www.orazen.io, the Orazen Documentation page, join the Orazen [discord community](https://discord.gg/p7nuUNVfP7). While you patiently wait for the most advanced, free crypto bot in the world, to hand you a possible golden strategy specially designed just for you.
 
 * If you wonder why it can take from 20 minutes to days to do 1000 epochs here are some answers:
 
@@ -289,30 +289,30 @@ of the search space, assuming that the bot never tests the same parameters more 
 Example: 4% profit 650 times vs 0,3% profit a trade 10000 times in a year. If we assume you set the --timerange to 365 days.
 
 Example:
-`freqtrade --config config.json --strategy SampleStrategy --hyperopt SampleHyperopt -e 1000 --timerange 20190601-20200601`
+`orazen --config config.json --strategy SampleStrategy --hyperopt SampleHyperopt -e 1000 --timerange 20190601-20200601`
 
 ## Official channels
 
-Freqtrade is using exclusively the following official channels:
+Orazen is using exclusively the following official channels:
 
-* [Freqtrade discord server](https://discord.gg/p7nuUNVfP7)
-* [Freqtrade documentation (https://freqtrade.io)](https://freqtrade.io)
-* [Freqtrade github organization](https://github.com/freqtrade)
+* [Orazen discord server](https://discord.gg/p7nuUNVfP7)
+* [Orazen documentation (https://orazen.io)](https://orazen.io)
+* [Orazen github organization](https://github.com/orazen)
 
-Nobody affiliated with the freqtrade project will ask you about your exchange keys or anything else exposing your funds to exploitation.
+Nobody affiliated with the orazen project will ask you about your exchange keys or anything else exposing your funds to exploitation.
 Should you be asked to expose your exchange keys or send funds to some random wallet, then please don't follow these instructions.
 
-Failing to follow these guidelines will not be responsibility of freqtrade.
+Failing to follow these guidelines will not be responsibility of orazen.
 
 ## Support policy
 
-We provide free support for Freqtrade on our [Discord server](https://discord.gg/p7nuUNVfP7) and via GitHub issues.
+We provide free support for Orazen on our [Discord server](https://discord.gg/p7nuUNVfP7) and via GitHub issues.
 We only support the most recent release (e.g. 2025.8) and the current development branch (e.g. 2025.9-dev).
 
 If you're on an older version, please follow the [upgrade instructions](updating.md) and see if your problem has already been addressed.
 
-## "Freqtrade token"
+## "Orazen token"
 
-Freqtrade does not have a Crypto token offering.
+Orazen does not have a Crypto token offering.
 
-Token offerings you find on the internet referring Freqtrade, FreqAI or freqUI must be considered to be a scam, trying to exploit freqtrade's popularity for their own, nefarious gains.
+Token offerings you find on the internet referring Orazen, FreqAI or freqUI must be considered to be a scam, trying to exploit orazen's popularity for their own, nefarious gains.

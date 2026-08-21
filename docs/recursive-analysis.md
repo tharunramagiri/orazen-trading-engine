@@ -4,7 +4,7 @@ This page explains how to validate your strategy for inaccuracies due to recursi
 
 A recursive formula defines any term of a sequence relative to its preceding term(s). An example of a recursive formula is a<sub>n</sub> = a<sub>n-1</sub> + b.
 
-Why does this matter for Freqtrade? In backtesting, the bot will get full data of the pairs according to the timerange specified. But in a dry/live run, the bot will be limited by the amount of data each exchanges gives.
+Why does this matter for Orazen? In backtesting, the bot will get full data of the pairs according to the timerange specified. But in a dry/live run, the bot will be limited by the amount of data each exchanges gives.
 
 For example, to calculate a very basic indicator called `steps`, the first row's value is always 0, while the following rows' values are equal to the value of the previous row plus 1. If I were to calculate it using the latest 1000 candles, then the `steps` value of the first row is 0, and the `steps` value at the last closed candle is 999.
 
@@ -25,7 +25,7 @@ Command settings:
 In addition to the recursive formula check, this command also carries out a simple lookahead bias check on the indicator values only. For a full lookahead check, use [Lookahead-analysis](lookahead-analysis.md).
 
 !!! Tip "Running recursive-analysis via freqUI"
-    `recursive-analysis` can also be ran through freqUI when running freqtrade in [webserver mode](utils.md#webserver-mode).
+    `recursive-analysis` can also be ran through freqUI when running orazen in [webserver mode](utils.md#webserver-mode).
     As the analysis can run for a while, it is executed as a background task.
 
 ## Recursive-analysis command reference
@@ -75,7 +75,7 @@ As such, aiming for absolute zero variance (shown by `-` value) might not be the
 
 ## Running recursive-analysis via the REST API
 
-`recursive-analysis` can also be triggered through the REST API when running freqtrade in [webserver mode](utils.md#webserver-mode).
+`recursive-analysis` can also be triggered through the REST API when running orazen in [webserver mode](utils.md#webserver-mode).
 As the analysis can run for a while, it is executed as a background task.
 
 1. `POST /api/v1/recursive_analysis` with a JSON body containing at least `strategy` and `timerange` (optional: `timeframe`, `startup_candle`). Pairs are taken from the webserver configuration. This returns a `job_id`.

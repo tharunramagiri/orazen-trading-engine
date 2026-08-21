@@ -4,11 +4,11 @@ from unittest.mock import MagicMock, PropertyMock
 import pandas as pd
 import pytest
 
-from freqtrade.commands.analyze_commands import start_analysis_entries_exits
-from freqtrade.commands.optimize_commands import start_backtesting
-from freqtrade.enums import ExitType
-from freqtrade.exceptions import OperationalException
-from freqtrade.optimize.backtesting import Backtesting
+from orazen.commands.analyze_commands import start_analysis_entries_exits
+from orazen.commands.optimize_commands import start_backtesting
+from orazen.enums import ExitType
+from orazen.exceptions import OperationalException
+from orazen.optimize.backtesting import Backtesting
 from tests.conftest import get_args, patch_exchange, patched_configuration_load_config_file
 
 
@@ -95,10 +95,10 @@ def test_backtest_analysis_on_entry_and_rejected_signals_nomock(
         ]
     )
     mocker.patch(
-        "freqtrade.plugins.pairlistmanager.PairListManager.whitelist",
+        "orazen.plugins.pairlistmanager.PairListManager.whitelist",
         PropertyMock(return_value=["ETH/BTC", "LTC/BTC", "DASH/BTC"]),
     )
-    mocker.patch("freqtrade.optimize.backtesting.Backtesting.backtest", backtestmock)
+    mocker.patch("orazen.optimize.backtesting.Backtesting.backtest", backtestmock)
 
     patched_configuration_load_config_file(mocker, default_conf)
 
@@ -335,10 +335,10 @@ def test_backtest_analysis_with_invalid_config(
         ]
     )
     mocker.patch(
-        "freqtrade.plugins.pairlistmanager.PairListManager.whitelist",
+        "orazen.plugins.pairlistmanager.PairListManager.whitelist",
         PropertyMock(return_value=["ETH/BTC", "LTC/BTC", "DASH/BTC"]),
     )
-    mocker.patch("freqtrade.optimize.backtesting.Backtesting.backtest", backtestmock)
+    mocker.patch("orazen.optimize.backtesting.Backtesting.backtest", backtestmock)
 
     patched_configuration_load_config_file(mocker, default_conf)
 
@@ -474,10 +474,10 @@ def test_backtest_analysis_on_entry_and_rejected_signals_only_entry_signals(
         ]
     )
     mocker.patch(
-        "freqtrade.plugins.pairlistmanager.PairListManager.whitelist",
+        "orazen.plugins.pairlistmanager.PairListManager.whitelist",
         PropertyMock(return_value=["ETH/BTC", "LTC/BTC", "DASH/BTC"]),
     )
-    mocker.patch("freqtrade.optimize.backtesting.Backtesting.backtest", backtestmock)
+    mocker.patch("orazen.optimize.backtesting.Backtesting.backtest", backtestmock)
 
     patched_configuration_load_config_file(mocker, default_conf)
 

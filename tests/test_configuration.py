@@ -7,30 +7,30 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from freqtrade.commands import Arguments
-from freqtrade.configuration import (
+from orazen.commands import Arguments
+from orazen.configuration import (
     Configuration,
     remove_exchange_credentials,
     sanitize_config,
     validate_config_consistency,
 )
-from freqtrade.configuration.config_validation import validate_config_schema
-from freqtrade.configuration.deprecated_settings import (
+from orazen.configuration.config_validation import validate_config_schema
+from orazen.configuration.deprecated_settings import (
     check_conflicting_settings,
     process_deprecated_setting,
     process_removed_setting,
     process_temporary_deprecated_settings,
 )
-from freqtrade.configuration.environment_vars import _flat_vars_to_nested_dict
-from freqtrade.configuration.load_config import (
+from orazen.configuration.environment_vars import _flat_vars_to_nested_dict
+from orazen.configuration.load_config import (
     load_config_file,
     load_file,
     load_from_files,
     log_config_error_range,
 )
-from freqtrade.constants import DEFAULT_DB_DRYRUN_URL, DEFAULT_DB_PROD_URL, ENV_VAR_PREFIX
-from freqtrade.enums import RunMode
-from freqtrade.exceptions import ConfigurationError, OperationalException
+from orazen.constants import DEFAULT_DB_DRYRUN_URL, DEFAULT_DB_PROD_URL, ENV_VAR_PREFIX
+from orazen.enums import RunMode
+from orazen.exceptions import ConfigurationError, OperationalException
 from tests.conftest import (
     CURRENT_TEST_STRATEGY,
     log_has,
@@ -71,7 +71,7 @@ def test_load_config_file(default_conf, mocker, caplog) -> None:
     del default_conf["user_data_dir"]
     default_conf["datadir"] = str(default_conf["datadir"])
     file_mock = mocker.patch(
-        "freqtrade.configuration.load_config.Path.open",
+        "orazen.configuration.load_config.Path.open",
         mocker.mock_open(read_data=json.dumps(default_conf)),
     )
 
@@ -85,7 +85,7 @@ def test_load_config_file_error(default_conf, mocker, caplog) -> None:
     default_conf["datadir"] = str(default_conf["datadir"])
     filedata = json.dumps(default_conf).replace('"stake_amount": 0.001,', '"stake_amount": .001,')
     mocker.patch(
-        "freqtrade.configuration.load_config.Path.open", mocker.mock_open(read_data=filedata)
+        "orazen.configuration.load_config.Path.open", mocker.mock_open(read_data=filedata)
     )
     mocker.patch.object(Path, "read_text", MagicMock(return_value=filedata))
 
@@ -177,7 +177,7 @@ def test_load_config_combine_dicts(default_conf, mocker, caplog) -> None:
     config_files = [conf1, conf2]
 
     configsmock = MagicMock(side_effect=config_files)
-    mocker.patch("freqtrade.configuration.load_config.load_config_file", configsmock)
+    mocker.patch("orazen.configuration.load_config.load_config_file", configsmock)
 
     arg_list = [
         "trade",
@@ -209,10 +209,10 @@ def test_from_config(default_conf, mocker, caplog) -> None:
     conf2["exchange"]["pair_whitelist"] += ["NANO/BTC"]
     conf2["fiat_display_currency"] = "EUR"
     config_files = [conf1, conf2]
-    mocker.patch("freqtrade.configuration.configuration.create_datadir", lambda c, x: x)
+    mocker.patch("orazen.configuration.configuration.create_datadir", lambda c, x: x)
 
     configsmock = MagicMock(side_effect=config_files)
-    mocker.patch("freqtrade.configuration.load_config.load_config_file", configsmock)
+    mocker.patch("orazen.configuration.load_config.load_config_file", configsmock)
 
     validated_conf = Configuration.from_files(["test_conf.json", "test2_conf.json"])
 
@@ -262,8 +262,8 @@ def test_print_config(default_conf, mocker, caplog) -> None:
     config_files = [conf1]
 
     configsmock = MagicMock(side_effect=config_files)
-    mocker.patch("freqtrade.configuration.configuration.create_datadir", lambda c, x: x)
-    mocker.patch("freqtrade.configuration.configuration.load_from_files", configsmock)
+    mocker.patch("orazen.configuration.configuration.create_datadir", lambda c, x: x)
+    mocker.patch("orazen.configuration.configuration.load_from_files", configsmock)
 
     validated_conf = Configuration.from_files(["test_conf.json"])
 
@@ -289,7 +289,7 @@ def test_load_config_max_open_trades_minus_one(default_conf, mocker, caplog) -> 
 
 def test_load_config_file_exception(mocker) -> None:
     mocker.patch(
-        "freqtrade.configuration.configuration.Path.open",
+        "orazen.configuration.configuration.Path.open",
         MagicMock(side_effect=FileNotFoundError("File not found")),
     )
 
@@ -474,9 +474,9 @@ def test_setup_configuration_without_arguments(mocker, default_conf, caplog) -> 
 
 def test_setup_configuration_with_arguments(mocker, default_conf, caplog, tmp_path) -> None:
     patched_configuration_load_config_file(mocker, default_conf)
-    mocker.patch("freqtrade.configuration.configuration.create_datadir", lambda c, x: x)
+    mocker.patch("orazen.configuration.configuration.create_datadir", lambda c, x: x)
     mocker.patch(
-        "freqtrade.configuration.configuration.create_userdata_dir",
+        "orazen.configuration.configuration.create_userdata_dir",
         lambda x, *args, **kwargs: Path(x),
     )
     arglist = [
@@ -488,7 +488,7 @@ def test_setup_configuration_with_arguments(mocker, default_conf, caplog, tmp_pa
         "--datadir",
         "/foo/bar",
         "--userdir",
-        f"{tmp_path}/freqtrade",
+        f"{tmp_path}/orazen",
         "--timeframe",
         "1m",
         "--enable-position-stacking",
@@ -511,7 +511,7 @@ def test_setup_configuration_with_arguments(mocker, default_conf, caplog, tmp_pa
     assert "pair_whitelist" in config["exchange"]
     assert "datadir" in config
     assert log_has("Using data directory: {} ...".format("/foo/bar"), caplog)
-    assert log_has(f"Using user-data directory: {tmp_path / 'freqtrade'} ...", caplog)
+    assert log_has(f"Using user-data directory: {tmp_path / 'orazen'} ...", caplog)
     assert "user_data_dir" in config
 
     assert "timeframe" in config
@@ -606,7 +606,7 @@ def test_cli_verbose_with_params(default_conf, mocker, caplog) -> None:
     patched_configuration_load_config_file(mocker, default_conf)
 
     # Prevent setting loggers
-    mocker.patch("freqtrade.loggers.logging.config.dictConfig", MagicMock)
+    mocker.patch("orazen.loggers.logging.config.dictConfig", MagicMock)
     arglist = ["trade", "-vvv"]
     args = Arguments(arglist).get_parsed_arg()
 
@@ -1067,7 +1067,7 @@ def test_validate_edge_removal(default_conf):
     }
     with pytest.raises(
         ConfigurationError,
-        match=r"Edge is no longer supported and has been removed from Freqtrade with 2025\.6\.",
+        match=r"Edge is no longer supported and has been removed from Orazen with 2025\.6\.",
     ):
         validate_config_consistency(default_conf)
 
@@ -1231,7 +1231,7 @@ def test_pairlist_resolving_fallback(mocker, tmp_path):
     mocker.patch.object(Path, "exists", MagicMock(return_value=True))
     mocker.patch.object(Path, "open", MagicMock(return_value=MagicMock()))
     mocker.patch(
-        "freqtrade.configuration.configuration.load_file",
+        "orazen.configuration.configuration.load_file",
         MagicMock(return_value=["XRP/BTC", "ETH/BTC"]),
     )
     arglist = ["download-data", "--exchange", "binance"]
@@ -1465,22 +1465,22 @@ def test_process_deprecated_protections(default_conf, caplog):
 
 def test_flat_vars_to_nested_dict(caplog):
     test_args = {
-        "FREQTRADE__EXCHANGE__SOME_SETTING": "true",
-        "FREQTRADE__EXCHANGE__SOME_FALSE_SETTING": "false",
-        "FREQTRADE__EXCHANGE__CONFIG__whatEver": "sometime",  # Lowercased
+        "ORAZEN__EXCHANGE__SOME_SETTING": "true",
+        "ORAZEN__EXCHANGE__SOME_FALSE_SETTING": "false",
+        "ORAZEN__EXCHANGE__CONFIG__whatEver": "sometime",  # Lowercased
         # Preserve case for ccxt_config
-        "FREQTRADE__EXCHANGE__CCXT_CONFIG__httpsProxy": "something",
-        "FREQTRADE__EXIT_PRICING__PRICE_SIDE": "bid",
-        "FREQTRADE__EXIT_PRICING__cccc": "500",
-        "FREQTRADE__STAKE_AMOUNT": "200.05",
-        "FREQTRADE__TELEGRAM__CHAT_ID": "2151",
+        "ORAZEN__EXCHANGE__CCXT_CONFIG__httpsProxy": "something",
+        "ORAZEN__EXIT_PRICING__PRICE_SIDE": "bid",
+        "ORAZEN__EXIT_PRICING__cccc": "500",
+        "ORAZEN__STAKE_AMOUNT": "200.05",
+        "ORAZEN__TELEGRAM__CHAT_ID": "2151",
         "NOT_RELEVANT": "200.0",  # Will be ignored
-        "FREQTRADE__ARRAY": '[{"name":"default","host":"xxx"}]',
-        "FREQTRADE__EXCHANGE__PAIR_WHITELIST": '["BTC/USDT", "ETH/USDT"]',
+        "ORAZEN__ARRAY": '[{"name":"default","host":"xxx"}]',
+        "ORAZEN__EXCHANGE__PAIR_WHITELIST": '["BTC/USDT", "ETH/USDT"]',
         # Fails due to trailing comma
-        "FREQTRADE__ARRAY_TRAIL_COMMA": '[{"name":"default","host":"xxx",}]',
+        "ORAZEN__ARRAY_TRAIL_COMMA": '[{"name":"default","host":"xxx",}]',
         # Object fails
-        "FREQTRADE__OBJECT": '{"name":"default","host":"xxx"}',
+        "ORAZEN__OBJECT": '{"name":"default","host":"xxx"}',
     }
     expected = {
         "stake_amount": 200.05,
@@ -1507,15 +1507,15 @@ def test_flat_vars_to_nested_dict(caplog):
     res = _flat_vars_to_nested_dict(test_args, ENV_VAR_PREFIX)
     assert res == expected
 
-    assert log_has("Loading variable 'FREQTRADE__EXCHANGE__SOME_SETTING'", caplog)
+    assert log_has("Loading variable 'ORAZEN__EXCHANGE__SOME_SETTING'", caplog)
     assert not log_has("Loading variable 'NOT_RELEVANT'", caplog)
 
 
 def test_setup_hyperopt_freqai(mocker, default_conf) -> None:
     patched_configuration_load_config_file(mocker, default_conf)
-    mocker.patch("freqtrade.configuration.configuration.create_datadir", lambda c, x: x)
+    mocker.patch("orazen.configuration.configuration.create_datadir", lambda c, x: x)
     mocker.patch(
-        "freqtrade.configuration.configuration.create_userdata_dir",
+        "orazen.configuration.configuration.create_userdata_dir",
         lambda x, *args, **kwargs: Path(x),
     )
     arglist = [
@@ -1544,9 +1544,9 @@ def test_setup_hyperopt_freqai(mocker, default_conf) -> None:
 
 def test_setup_freqai_backtesting(mocker, default_conf) -> None:
     patched_configuration_load_config_file(mocker, default_conf)
-    mocker.patch("freqtrade.configuration.configuration.create_datadir", lambda c, x: x)
+    mocker.patch("orazen.configuration.configuration.create_datadir", lambda c, x: x)
     mocker.patch(
-        "freqtrade.configuration.configuration.create_userdata_dir",
+        "orazen.configuration.configuration.create_userdata_dir",
         lambda x, *args, **kwargs: Path(x),
     )
     arglist = [

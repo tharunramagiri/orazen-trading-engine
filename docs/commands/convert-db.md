@@ -1,5 +1,5 @@
 ``` output
-usage: freqtrade convert-db [-h] [--db-url PATH] [--db-url-from PATH]
+usage: orazen convert-db [-h] [--db-url PATH] [--db-url-from PATH]
 
 options:
   -h, --help          show this help message and exit

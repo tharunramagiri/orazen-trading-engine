@@ -1,8 +1,8 @@
 # Strategy analysis example
 
-Debugging a strategy can be time-consuming. Freqtrade offers helper functions to visualize raw data.
+Debugging a strategy can be time-consuming. Orazen offers helper functions to visualize raw data.
 The following assumes you work with SampleStrategy, data for 5m timeframe from Binance and have downloaded them into the data directory in the default location.
-Please follow the [documentation](https://www.freqtrade.io/en/stable/data-download/) for more details.
+Please follow the [documentation](https://www.orazen.io/en/stable/data-download/) for more details.
 
 ## Setup
 
@@ -17,7 +17,7 @@ from pathlib import Path
 # Change directory
 # Modify this cell to insure that the output shows the correct path.
 # Define all paths relative to the project root shown in the cell output
-project_root = "somedir/freqtrade"
+project_root = "somedir/orazen"
 i = 0
 try:
     os.chdir(project_root)
@@ -32,11 +32,11 @@ except FileNotFoundError:
 print(Path.cwd())
 ```
 
-### Configure Freqtrade environment
+### Configure Orazen environment
 
 
 ```python
-from freqtrade.configuration import Configuration
+from orazen.configuration import Configuration
 
 
 # Customize these according to your needs.
@@ -59,8 +59,8 @@ pair = "BTC/USDT"
 
 ```python
 # Load data using values set above
-from freqtrade.data.history import load_pair_history
-from freqtrade.enums import CandleType
+from orazen.data.history import load_pair_history
+from orazen.enums import CandleType
 
 
 candles = load_pair_history(
@@ -82,8 +82,8 @@ candles.head()
 
 ```python
 # Load strategy using values set above
-from freqtrade.data.dataprovider import DataProvider
-from freqtrade.resolvers import StrategyResolver
+from orazen.data.dataprovider import DataProvider
+from orazen.resolvers import StrategyResolver
 
 
 strategy = StrategyResolver.load_strategy(config)
@@ -125,7 +125,7 @@ Analyze a trades dataframe (also used below for plotting)
 
 
 ```python
-from freqtrade.data.btanalysis import load_backtest_data, load_backtest_stats
+from orazen.data.btanalysis import load_backtest_data, load_backtest_stats
 
 
 # if backtest_dir points to a directory, it'll automatically load the last backtest file.
@@ -180,8 +180,8 @@ trades.groupby("pair")["exit_reason"].value_counts()
 import pandas as pd
 import plotly.express as px
 
-from freqtrade.configuration import Configuration
-from freqtrade.data.btanalysis import load_backtest_stats
+from orazen.configuration import Configuration
+from orazen.data.btanalysis import load_backtest_stats
 
 
 # strategy = 'SampleStrategy'
@@ -204,7 +204,7 @@ In case you did already some trading and want to analyze your performance
 
 
 ```python
-from freqtrade.data.btanalysis import load_trades_from_db
+from orazen.data.btanalysis import load_trades_from_db
 
 
 # Fetch trades from database
@@ -221,7 +221,7 @@ This can be useful to find the best `max_open_trades` parameter, when used with 
 
 
 ```python
-from freqtrade.data.btanalysis import analyze_trade_parallelism
+from orazen.data.btanalysis import analyze_trade_parallelism
 
 
 # Analyze the above
@@ -232,11 +232,11 @@ parallel_trades.plot()
 
 ## Plot results
 
-Freqtrade offers interactive plotting capabilities based on plotly.
+Orazen offers interactive plotting capabilities based on plotly.
 
 
 ```python
-from freqtrade.plot.plotting import generate_candlestick_graph
+from orazen.plot.plotting import generate_candlestick_graph
 
 
 # Limit graph period to keep plotly quick and reactive

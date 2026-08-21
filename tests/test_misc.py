@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from freqtrade.misc import (
+from orazen.misc import (
     dataframe_to_json,
     deep_merge_dicts,
     dump_json_to_file,
@@ -61,12 +61,12 @@ def test_dump_json_to_file_datetime_format() -> None:
 
 
 def test_file_dump_json(mocker) -> None:
-    file_open = mocker.patch("freqtrade.misc.Path.open", MagicMock())
+    file_open = mocker.patch("orazen.misc.Path.open", MagicMock())
     json_dump = mocker.patch("orjson.dumps", MagicMock(return_value=b"[1,2,3]"))
     file_dump_json(Path("somefile"), [1, 2, 3])
     assert file_open.call_count == 1
     assert json_dump.call_count == 1
-    file_open = mocker.patch("freqtrade.misc.gzip.open", MagicMock())
+    file_open = mocker.patch("orazen.misc.gzip.open", MagicMock())
     json_dump = mocker.patch("orjson.dumps", MagicMock(return_value=b"[1,2,3]"))
     file_dump_json(Path("somefile"), [1, 2, 3], True)
     assert file_open.call_count == 1
@@ -262,8 +262,8 @@ def test_plural() -> None:
             "postgresql+psycopg://host/dbname",
         ),
         (
-            "sqlite:////freqtrade/user_data/tradesv3.sqlite",
-            "sqlite:////freqtrade/user_data/tradesv3.sqlite",
+            "sqlite:////orazen/user_data/tradesv3.sqlite",
+            "sqlite:////orazen/user_data/tradesv3.sqlite",
         ),
     ],
 )

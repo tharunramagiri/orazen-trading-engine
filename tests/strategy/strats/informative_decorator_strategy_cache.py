@@ -4,15 +4,15 @@ from collections import Counter
 
 from pandas import DataFrame
 
-from freqtrade.strategy import IStrategy, informative
+from orazen.strategy import IStrategy, informative
 
 
 class InformativeDecoratorCacheTest(IStrategy):
     """
-    Strategy used by tests freqtrade bot.
+    Strategy used by tests orazen bot.
     Please do not modify this strategy, it's  intended for internal use only.
     Please look at the SampleStrategy in the user_data/strategy directory
-    or strategy repository https://github.com/freqtrade/freqtrade-strategies
+    or strategy repository https://github.com/orazen/orazen-strategies
     for samples and inspiration.
     """
 

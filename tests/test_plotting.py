@@ -6,13 +6,13 @@ import plotly.graph_objects as go
 import pytest
 from plotly.subplots import make_subplots
 
-from freqtrade.commands import start_plot_dataframe, start_plot_profit
-from freqtrade.configuration import TimeRange
-from freqtrade.data import history
-from freqtrade.data.btanalysis import load_backtest_data
-from freqtrade.data.metrics import create_cum_profit
-from freqtrade.exceptions import OperationalException
-from freqtrade.plot.plotting import (
+from orazen.commands import start_plot_dataframe, start_plot_profit
+from orazen.configuration import TimeRange
+from orazen.data import history
+from orazen.data.btanalysis import load_backtest_data
+from orazen.data.metrics import create_cum_profit
+from orazen.exceptions import OperationalException
+from orazen.plot.plotting import (
     add_areas,
     add_indicators,
     add_profit,
@@ -26,7 +26,7 @@ from freqtrade.plot.plotting import (
     plot_trades,
     store_plot_file,
 )
-from freqtrade.resolvers import StrategyResolver
+from orazen.resolvers import StrategyResolver
 from tests.conftest import get_args, log_has, log_has_re, patch_exchange
 
 
@@ -206,10 +206,10 @@ def test_plot_trades(testdatadir, caplog):
 
 def test_generate_candlestick_graph_no_signals_no_trades(default_conf, mocker, testdatadir, caplog):
     row_mock = mocker.patch(
-        "freqtrade.plot.plotting.add_indicators", MagicMock(side_effect=fig_generating_mock)
+        "orazen.plot.plotting.add_indicators", MagicMock(side_effect=fig_generating_mock)
     )
     trades_mock = mocker.patch(
-        "freqtrade.plot.plotting.plot_trades", MagicMock(side_effect=fig_generating_mock)
+        "orazen.plot.plotting.plot_trades", MagicMock(side_effect=fig_generating_mock)
     )
 
     pair = "UNITTEST/BTC"
@@ -250,10 +250,10 @@ def test_generate_candlestick_graph_no_signals_no_trades(default_conf, mocker, t
 
 def test_generate_candlestick_graph_no_trades(default_conf, mocker, testdatadir):
     row_mock = mocker.patch(
-        "freqtrade.plot.plotting.add_indicators", MagicMock(side_effect=fig_generating_mock)
+        "orazen.plot.plotting.add_indicators", MagicMock(side_effect=fig_generating_mock)
     )
     trades_mock = mocker.patch(
-        "freqtrade.plot.plotting.plot_trades", MagicMock(side_effect=fig_generating_mock)
+        "orazen.plot.plotting.plot_trades", MagicMock(side_effect=fig_generating_mock)
     )
     pair = "UNITTEST/BTC"
     timerange = TimeRange(None, "line", 0, -1000)
@@ -301,17 +301,17 @@ def test_generate_candlestick_graph_no_trades(default_conf, mocker, testdatadir)
 
 def test_generate_Plot_filename():
     fn = generate_plot_filename("UNITTEST/BTC", "5m")
-    assert fn == "freqtrade-plot-UNITTEST_BTC-5m.html"
+    assert fn == "orazen-plot-UNITTEST_BTC-5m.html"
 
 
 def test_generate_plot_file(mocker, caplog, user_dir):
     fig = generate_empty_figure()
-    plot_mock = mocker.patch("freqtrade.plot.plotting.plot", MagicMock())
+    plot_mock = mocker.patch("orazen.plot.plotting.plot", MagicMock())
     store_plot_file(
-        fig, filename="freqtrade-plot-UNITTEST_BTC-5m.html", directory=user_dir / "plot"
+        fig, filename="orazen-plot-UNITTEST_BTC-5m.html", directory=user_dir / "plot"
     )
 
-    expected_fn = str(user_dir / "plot/freqtrade-plot-UNITTEST_BTC-5m.html")
+    expected_fn = str(user_dir / "plot/orazen-plot-UNITTEST_BTC-5m.html")
     assert plot_mock.call_count == 1
     assert plot_mock.call_args[0][0] == fig
     assert plot_mock.call_args_list[0][1]["filename"] == expected_fn
@@ -355,7 +355,7 @@ def test_generate_profit_graph(testdatadir):
     )
     assert isinstance(fig, go.Figure)
 
-    assert fig.layout.title.text == "Freqtrade Profit plot"
+    assert fig.layout.title.text == "Orazen Profit plot"
     assert fig.layout.yaxis.title.text == "Price"
     assert fig.layout.yaxis2.title.text == "Profit BTC"
     assert fig.layout.yaxis3.title.text == "Profit BTC"
@@ -396,7 +396,7 @@ def test_generate_profit_graph(testdatadir):
 
 
 def test_start_plot_dataframe(mocker):
-    aup = mocker.patch("freqtrade.plot.plotting.load_and_plot_trades", MagicMock())
+    aup = mocker.patch("orazen.plot.plotting.load_and_plot_trades", MagicMock())
     args = [
         "plot-dataframe",
         "--config",
@@ -424,7 +424,7 @@ def test_load_and_plot_trades(default_conf, mocker, caplog, testdatadir):
     candle_mock = MagicMock()
     store_mock = MagicMock()
     mocker.patch.multiple(
-        "freqtrade.plot.plotting",
+        "orazen.plot.plotting",
         generate_candlestick_graph=candle_mock,
         store_plot_file=store_mock,
     )
@@ -441,7 +441,7 @@ def test_load_and_plot_trades(default_conf, mocker, caplog, testdatadir):
 
 
 def test_start_plot_profit(mocker):
-    aup = mocker.patch("freqtrade.plot.plotting.plot_profit", MagicMock())
+    aup = mocker.patch("orazen.plot.plotting.plot_profit", MagicMock())
     args = [
         "plot-profit",
         "--config",
@@ -476,7 +476,7 @@ def test_plot_profit(default_conf, mocker, testdatadir):
     profit_mock = MagicMock()
     store_mock = MagicMock()
     mocker.patch.multiple(
-        "freqtrade.plot.plotting", generate_profit_graph=profit_mock, store_plot_file=store_mock
+        "orazen.plot.plotting", generate_profit_graph=profit_mock, store_plot_file=store_mock
     )
     with pytest.raises(
         OperationalException, match=r"No trades found, cannot generate Profit-plot.*"

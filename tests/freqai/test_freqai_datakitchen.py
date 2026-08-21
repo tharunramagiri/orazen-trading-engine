@@ -6,10 +6,10 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from freqtrade.configuration import TimeRange
-from freqtrade.data.dataprovider import DataProvider
-from freqtrade.exceptions import OperationalException
-from freqtrade.freqai.data_kitchen import FreqaiDataKitchen
+from orazen.configuration import TimeRange
+from orazen.data.dataprovider import DataProvider
+from orazen.exceptions import OperationalException
+from orazen.freqai.data_kitchen import FreqaiDataKitchen
 from tests.conftest import get_patched_exchange, is_mac
 from tests.freqai.conftest import (
     get_patched_data_kitchen,

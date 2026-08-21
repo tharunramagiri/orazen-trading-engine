@@ -4,16 +4,16 @@ from unittest.mock import MagicMock
 import pandas as pd
 import pytest
 
-from freqtrade.data.converter import ohlcv_to_dataframe
-from freqtrade.enums import CandleType
-from freqtrade.exceptions import OperationalException
-from freqtrade.plugins.pairlist.PercentChangePairList import PercentChangePairList
-from freqtrade.plugins.pairlistmanager import PairListManager
+from orazen.data.converter import ohlcv_to_dataframe
+from orazen.enums import CandleType
+from orazen.exceptions import OperationalException
+from orazen.plugins.pairlist.PercentChangePairList import PercentChangePairList
+from orazen.plugins.pairlistmanager import PairListManager
 from tests.conftest import (
     EXMS,
     generate_test_data_raw,
     get_patched_exchange,
-    get_patched_freqtradebot,
+    get_patched_orazenbot,
 )
 
 
@@ -47,7 +47,7 @@ def test_volume_change_pair_list_init_exchange_support(mocker, rpl_config):
         r"Please edit your config and either remove PercentChangePairList, "
         r"or switch to using candles and restart the bot.",
     ):
-        get_patched_freqtradebot(mocker, rpl_config)
+        get_patched_orazenbot(mocker, rpl_config)
 
 
 def test_volume_change_pair_list_init_wrong_refresh_period(mocker, rpl_config):
@@ -68,7 +68,7 @@ def test_volume_change_pair_list_init_wrong_refresh_period(mocker, rpl_config):
         r"timeframe of 1d. Please adjust refresh_period "
         r"to at least 86400 and restart the bot.",
     ):
-        get_patched_freqtradebot(mocker, rpl_config)
+        get_patched_orazenbot(mocker, rpl_config)
 
 
 def test_volume_change_pair_list_init_wrong_lookback_period(mocker, rpl_config):
@@ -91,7 +91,7 @@ def test_volume_change_pair_list_init_wrong_lookback_period(mocker, rpl_config):
         r"Please set lookback_days only or lookback_period "
         r"and lookback_timeframe and restart the bot.",
     ):
-        get_patched_freqtradebot(mocker, rpl_config)
+        get_patched_orazenbot(mocker, rpl_config)
 
     rpl_config["pairlists"] = [
         {
@@ -110,7 +110,7 @@ def test_volume_change_pair_list_init_wrong_lookback_period(mocker, rpl_config):
         match=r"Ambiguous configuration: lookback_days implies a lookback_timeframe "
         r"of 1d, but lookback_timeframe is set to 1h\..*",
     ):
-        get_patched_freqtradebot(mocker, rpl_config)
+        get_patched_orazenbot(mocker, rpl_config)
 
     rpl_config["pairlists"] = [
         {
@@ -128,7 +128,7 @@ def test_volume_change_pair_list_init_wrong_lookback_period(mocker, rpl_config):
         match=r"PercentChangePairList requires lookback_period to not exceed"
         r" exchange max request size \(\d+\)",
     ):
-        get_patched_freqtradebot(mocker, rpl_config)
+        get_patched_orazenbot(mocker, rpl_config)
 
 
 def test_volume_change_pair_list_init_wrong_config(mocker, rpl_config):
@@ -146,7 +146,7 @@ def test_volume_change_pair_list_init_wrong_config(mocker, rpl_config):
         match=r"`number_assets` not specified. Please check your configuration "
         r'for "pairlist.config.number_assets"',
     ):
-        get_patched_freqtradebot(mocker, rpl_config)
+        get_patched_orazenbot(mocker, rpl_config)
 
 
 def test_gen_pairlist_with_valid_change_pair_list_config(mocker, rpl_config, tickers, time_machine):

@@ -1,19 +1,19 @@
-![freqtrade](assets/freqtrade_poweredby.svg)
+![orazen](assets/orazen_poweredby.svg)
 
-[![Freqtrade CI](https://github.com/freqtrade/freqtrade/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/freqtrade/freqtrade/actions/workflows/ci.yml)
+[![Orazen CI](https://github.com/orazen/orazen/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/orazen/orazen/actions/workflows/ci.yml)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.04864/status.svg)](https://doi.org/10.21105/joss.04864)
-[![codecov](https://codecov.io/gh/freqtrade/freqtrade/branch/develop/graph/badge.svg?token=AD5BG3ATKI)](https://codecov.io/gh/freqtrade/freqtrade)
-[![Documentation](https://readthedocs.org/projects/freqtrade/badge/)](https://www.freqtrade.io)
-[![Discord Server](https://img.shields.io/badge/Freqtrade_Discord-4E4E4E?logo=discord)](https://discord.gg/p7nuUNVfP7)
+[![codecov](https://codecov.io/gh/orazen/orazen/branch/develop/graph/badge.svg?token=AD5BG3ATKI)](https://codecov.io/gh/orazen/orazen)
+[![Documentation](https://readthedocs.org/projects/orazen/badge/)](https://www.orazen.io)
+[![Discord Server](https://img.shields.io/badge/Orazen_Discord-4E4E4E?logo=discord)](https://discord.gg/p7nuUNVfP7)
 
 <!-- GitHub action buttons -->
-[:octicons-star-16: Star](https://github.com/freqtrade/freqtrade){ .md-button .md-button--sm }
-[:octicons-repo-forked-16: Fork](https://github.com/freqtrade/freqtrade/fork){ .md-button .md-button--sm }
-[:octicons-download-16: Download](https://github.com/freqtrade/freqtrade/archive/stable.zip){ .md-button .md-button--sm }
+[:octicons-star-16: Star](https://github.com/orazen/orazen){ .md-button .md-button--sm }
+[:octicons-repo-forked-16: Fork](https://github.com/orazen/orazen/fork){ .md-button .md-button--sm }
+[:octicons-download-16: Download](https://github.com/orazen/orazen/archive/stable.zip){ .md-button .md-button--sm }
 
 ## Introduction
 
-Freqtrade is a free and open source crypto trading bot written in Python. It is designed to support all major exchanges and be controlled via Telegram or webUI. It contains backtesting, plotting and money management tools as well as strategy optimization by machine learning.
+Orazen is a free and open source crypto trading bot written in Python. It is designed to support all major exchanges and be controlled via Telegram or webUI. It contains backtesting, plotting and money management tools as well as strategy optimization by machine learning.
 
 !!! Danger "DISCLAIMER"
     This software is for educational purposes only. Do not risk money which you are afraid to lose. USE THE SOFTWARE AT YOUR OWN RISK. THE AUTHORS AND ALL AFFILIATES ASSUME NO RESPONSIBILITY FOR YOUR TRADING RESULTS.
@@ -22,18 +22,18 @@ Freqtrade is a free and open source crypto trading bot written in Python. It is 
 
     We strongly recommend you to have basic coding skills and Python knowledge. Do not hesitate to read the source code and understand the mechanisms of this bot, algorithms and techniques implemented in it.
 
-![freqtrade screenshot](assets/freqtrade-screenshot.png)
+![orazen screenshot](assets/orazen-screenshot.png)
 
 ## Features
 
-- Develop your Strategy: Write your strategy in python, using [pandas](https://pandas.pydata.org/). Example strategies to inspire you are available in the [strategy repository](https://github.com/freqtrade/freqtrade-strategies).
+- Develop your Strategy: Write your strategy in python, using [pandas](https://pandas.pydata.org/). Example strategies to inspire you are available in the [strategy repository](https://github.com/orazen/orazen-strategies).
 - Download market data: Download historical data of the exchange and the markets your may want to trade with.
 - Backtest: Test your strategy on downloaded historical data.
 - Optimize: Find the best parameters for your strategy using hyperoptimization which employs machine learning methods. You can optimize buy, sell, take profit (ROI), stop-loss and trailing stop-loss parameters for your strategy.
 - Select markets: Create your static list or use an automatic one based on top traded volumes and/or prices (not available during backtesting). You can also explicitly blacklist markets you don't want to trade.
 - Run: Test your strategy with simulated money (Dry-Run mode) or deploy it with real money (Live-Trade mode).
 - Control/Monitor: Use Telegram or a WebUI (start/stop the bot, show profit/loss, daily summary, current open trades results, etc.).
-- Analyze: Further analysis can be performed on either Backtesting data or Freqtrade trading history (SQL database), including automated standard plots, and methods to load the data into [interactive environments](data-analysis.md).
+- Analyze: Further analysis can be performed on either Backtesting data or Orazen trading history (SQL database), including automated standard plots, and methods to load the data into [interactive environments](data-analysis.md).
 
 ## Supported exchange marketplaces
 
@@ -104,7 +104,7 @@ Alternatively
 
 ### Help / Discord
 
-For any questions not covered by the documentation or for further information about the bot, or to simply engage with like-minded individuals, we encourage you to join the Freqtrade [discord server](https://discord.gg/p7nuUNVfP7).
+For any questions not covered by the documentation or for further information about the bot, or to simply engage with like-minded individuals, we encourage you to join the Orazen [discord server](https://discord.gg/p7nuUNVfP7).
 
 ## Ready to try?
 

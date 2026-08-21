@@ -2,7 +2,7 @@
 
 This page explains how to prepare your environment for running the bot.
 
-The freqtrade documentation describes various ways to install freqtrade
+The orazen documentation describes various ways to install orazen
 
 * [Docker images](docker_quickstart.md) (separate page)
 * [Script Installation](#script-installation)
@@ -12,14 +12,14 @@ The freqtrade documentation describes various ways to install freqtrade
 Please consider using the prebuilt [docker images](docker_quickstart.md) to get started quickly.
 
 !!! Note "Updating"
-    Keeping freqtrade updated is important to [ensure ongoing compatibility](updating.md#why-update) with exchange API's.
+    Keeping orazen updated is important to [ensure ongoing compatibility](updating.md#why-update) with exchange API's.
     Please refer to the [updating guide](updating.md) for details on how to update your installation.
 
 !!! Note "Windows users"
     We **strongly** recommend that Windows users use [Docker](docker_quickstart.md) as this will work much easier and smoother (also more secure).
 
     If that is not possible, try using the Windows Linux subsystem (WSL) - for which the Ubuntu/Linux instructions will work.
-    If you really want to install freqtrade natively on Windows, best use the [`./setup.ps1` installation script](#use-setupps1-windows).
+    If you really want to install orazen natively on Windows, best use the [`./setup.ps1` installation script](#use-setupps1-windows).
 
     Please also make sure to use the 64bit version of Python, as 32bit versions have severe memory limitations, which can negatively impact your experience with backtesting/hyperopt.
 
@@ -27,14 +27,14 @@ Please consider using the prebuilt [docker images](docker_quickstart.md) to get 
 
 ## Information
 
-The easiest way to install and run Freqtrade is to clone the bot Github repository and then run the `./setup.sh` (`./setup.ps1` for Windows) script, if it's available for your platform.
+The easiest way to install and run Orazen is to clone the bot Github repository and then run the `./setup.sh` (`./setup.ps1` for Windows) script, if it's available for your platform.
 
 !!! Note "Version considerations"
     When cloning the repository the default working branch has the name `develop`. This branch contains all last features (can be considered as relatively stable, thanks to automated tests).
     The `stable` branch contains the code of the last release (done usually once per month on an approximately one week old snapshot of the `develop` branch to prevent packaging bugs, so potentially it's more stable).
 
 !!! Note
-    Either [uv](https://docs.astral.sh/uv/), or Python3.11 or higher and the corresponding `pip` are assumed to be available. The install-script will warn you and stop if that's not the case. `git` is also needed to clone the Freqtrade repository.  
+    Either [uv](https://docs.astral.sh/uv/), or Python3.11 or higher and the corresponding `pip` are assumed to be available. The install-script will warn you and stop if that's not the case. `git` is also needed to clone the Orazen repository.  
     Also, python headers (`python<yourversion>-dev` / `python<yourversion>-devel`) must be available for the installation to complete successfully.
 
 !!! Warning "Up-to-date clock"
@@ -47,7 +47,7 @@ The easiest way to install and run Freqtrade is to clone the bot Github reposito
 These requirements apply to both [Script Installation](#script-installation) and [Manual Installation](#manual-installation).
 
 !!! Note "ARM64 systems"
-    If you are running an ARM64 system (like a MacOS M1 or an Oracle VM), please use [docker](docker_quickstart.md) to run freqtrade.
+    If you are running an ARM64 system (like a MacOS M1 or an Oracle VM), please use [docker](docker_quickstart.md) to run orazen.
     While native installation is possible with some manual effort, this is not supported at the moment.
 
 ### Install guide
@@ -90,7 +90,7 @@ OS Specific steps are listed first, the common section below is necessary for al
 
 === "RaspberryPi/Raspbian"
     The following assumes the latest [Raspbian Buster lite image](https://www.raspberrypi.org/downloads/raspbian/).
-    This image comes with python3.11 preinstalled, making it easy to get freqtrade up and running.
+    This image comes with python3.11 preinstalled, making it easy to get orazen up and running.
 
     Tested using a Raspberry Pi 3 with the Raspbian Buster lite image, all updates applied.
 
@@ -100,8 +100,8 @@ OS Specific steps are listed first, the common section below is necessary for al
     # Use piwheels.org to speed up installation
     sudo echo "[global]\nextra-index-url=https://www.piwheels.org/simple" > tee /etc/pip.conf
 
-    git clone https://github.com/freqtrade/freqtrade.git
-    cd freqtrade
+    git clone https://github.com/orazen/orazen.git
+    cd orazen
 
     bash setup.sh -i
     ```
@@ -116,16 +116,16 @@ OS Specific steps are listed first, the common section below is necessary for al
 
 ------
 
-## Freqtrade repository
+## Orazen repository
 
-Freqtrade is an open source crypto-currency trading bot, whose code is hosted on `github.com`
+Orazen is an open source crypto-currency trading bot, whose code is hosted on `github.com`
 
 ```bash
-# Download `develop` branch of freqtrade repository
-git clone https://github.com/freqtrade/freqtrade.git
+# Download `develop` branch of orazen repository
+git clone https://github.com/orazen/orazen.git
 
 # Enter downloaded directory
-cd freqtrade
+cd orazen
 
 # your choice (1): novice user
 git checkout stable
@@ -139,26 +139,26 @@ git checkout develop
 You may later switch between branches at any time with the `git checkout stable`/`git checkout develop` commands.
 
 ??? Note "Install from pypi"
-    An alternative way to install Freqtrade is from [pypi](https://pypi.org/project/freqtrade/). The downside is that this method requires ta-lib to be correctly installed beforehand, and is therefore currently not the recommended way to install Freqtrade.
+    An alternative way to install Orazen is from [pypi](https://pypi.org/project/orazen/). The downside is that this method requires ta-lib to be correctly installed beforehand, and is therefore currently not the recommended way to install Orazen.
 
     ``` bash
-    pip install freqtrade
+    pip install orazen
     ```
 
 ------
 
 ## Script Installation
 
-First of the ways to install Freqtrade, is to use provided the Linux/MacOS `./setup.sh` script, which install all dependencies and help you configure the bot.
+First of the ways to install Orazen, is to use provided the Linux/MacOS `./setup.sh` script, which install all dependencies and help you configure the bot.
 
-Make sure you fulfill the [Requirements](#requirements) and have downloaded the [Freqtrade repository](#freqtrade-repository).
+Make sure you fulfill the [Requirements](#requirements) and have downloaded the [Orazen repository](#orazen-repository).
 
 ### Use /setup.sh -install (Linux/MacOS)
 
-If you are on Debian, Ubuntu or MacOS, freqtrade provides the script to install freqtrade.
+If you are on Debian, Ubuntu or MacOS, orazen provides the script to install orazen.
 
 ```bash
-# --install, Install freqtrade from scratch
+# --install, Install orazen from scratch
 ./setup.sh -i
 ```
 
@@ -208,7 +208,7 @@ The script will ask you a few questions to determine which parts should be insta
 
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy Bypass
-cd freqtrade
+cd orazen
 . .\setup.ps1
 ```
 
@@ -225,14 +225,14 @@ cd freqtrade
 
 ## Manual Installation
 
-Make sure you fulfill the [Requirements](#requirements) and have downloaded the [Freqtrade repository](#freqtrade-repository).
+Make sure you fulfill the [Requirements](#requirements) and have downloaded the [Orazen repository](#orazen-repository).
 
 ### Setup Python virtual environment (virtualenv)
 
-You will run freqtrade in separated `virtual environment`
+You will run orazen in separated `virtual environment`
 
 ```bash
-# create virtualenv in directory /freqtrade/.venv
+# create virtualenv in directory /orazen/.venv
 python3 -m venv .venv
 
 # run virtualenv
@@ -244,7 +244,7 @@ source .venv/bin/activate
 ```bash
 python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
-# install freqtrade
+# install orazen
 python3 -m pip install -e .
 ```
 
@@ -261,7 +261,7 @@ On Linux with software suite `systemd`, as an optional post-installation task, y
 
 ## Installation with Conda
 
-Freqtrade can also be installed with Miniconda or Anaconda. We recommend using Miniconda as it's installation footprint is smaller. Conda will automatically prepare and manage the extensive library-dependencies of the Freqtrade program.
+Orazen can also be installed with Miniconda or Anaconda. We recommend using Miniconda as it's installation footprint is smaller. Conda will automatically prepare and manage the extensive library-dependencies of the Orazen program.
 
 ### What is Conda?
 
@@ -277,22 +277,22 @@ Conda is a package, dependency and environment manager for multiple programming 
 
 Answer all questions. After installation, it is mandatory to turn your terminal OFF and ON again.
 
-#### Freqtrade download
+#### Orazen download
 
-Download and install freqtrade.
+Download and install orazen.
 
 ```bash
-# download freqtrade
-git clone https://github.com/freqtrade/freqtrade.git
+# download orazen
+git clone https://github.com/orazen/orazen.git
 
-# enter downloaded directory 'freqtrade'
-cd freqtrade      
+# enter downloaded directory 'orazen'
+cd orazen      
 ```
 
-#### Freqtrade install: Conda Environment
+#### Orazen install: Conda Environment
 
 ```bash
-conda create --name freqtrade python=3.12
+conda create --name orazen python=3.12
 ```
 
 !!! Note "Creating Conda Environment"
@@ -303,7 +303,7 @@ conda create --name freqtrade python=3.12
     conda env create -n [name of the environment] [python version] [packages]
     ```
 
-#### Enter/exit freqtrade environment
+#### Enter/exit orazen environment
 
 To check available environments, type
 
@@ -315,7 +315,7 @@ Enter installed environment
 
 ```bash
 # enter conda environment
-conda activate freqtrade
+conda activate orazen
 
 # exit conda environment - don't do it now
 conda deactivate
@@ -340,8 +340,8 @@ conda env list
 # activate base environment
 conda activate
 
-# activate freqtrade environment
-conda activate freqtrade
+# activate orazen environment
+conda activate orazen
 
 #deactivate any conda environments
 conda deactivate                              
@@ -368,16 +368,16 @@ Happy trading!
 
 ## You are ready
 
-You've made it this far, so you have successfully installed freqtrade.
+You've made it this far, so you have successfully installed orazen.
 
 ### Initialize the configuration
 
 ```bash
 # Step 1 - Initialize user folder
-freqtrade create-userdir --userdir user_data
+orazen create-userdir --userdir user_data
 
 # Step 2 - Create a new configuration file
-freqtrade new-config --config user_data/config.json
+orazen new-config --config user_data/config.json
 ```
 
 You are ready to run, read [Bot Configuration](configuration.md), remember to start with `dry_run: True` and verify that everything is working.
@@ -387,7 +387,7 @@ To learn how to setup your configuration, please refer to the [Bot Configuration
 ### Start the Bot
 
 ```bash
-freqtrade trade --config user_data/config.json --strategy SampleStrategy
+orazen trade --config user_data/config.json --strategy SampleStrategy
 ```
 
 !!! Warning
@@ -403,7 +403,7 @@ If you used (1)`Script` or (2)`Manual` installation, you need to run the bot in 
 
 ```bash
 # if:
-bash: freqtrade: command not found
+bash: orazen: command not found
 
 # then activate your virtual environment
 source ./.venv/bin/activate

@@ -1,16 +1,16 @@
 # Trading with Leverage
 
 !!! Note "Multiple bots on one account"
-    You can't run 2 bots on the same account with leverage. For leveraged / margin trading, freqtrade assumes it's the only user of the account, and all liquidation levels are calculated based on this assumption.
+    You can't run 2 bots on the same account with leverage. For leveraged / margin trading, orazen assumes it's the only user of the account, and all liquidation levels are calculated based on this assumption.
 
 !!! Danger "Trading with leverage is very risky"
     Do not trade with a leverage > 1 using a strategy that hasn't shown positive results in a live run using the spot market. Check the stoploss of your strategy. With a leverage of 2, a stoploss of 0.5 (50%) would be too low, and these trades would be liquidated before reaching that stoploss.
     We do not assume any responsibility for eventual losses that occur from using this software or this mode.
 
-    Please only use advanced trading modes when you know how freqtrade (and your strategy) works.
+    Please only use advanced trading modes when you know how orazen (and your strategy) works.
     Also, never risk more than what you can afford to lose.
 
-If you already have an existing strategy, please read the [strategy migration guide](strategy_migration.md#strategy-migration-between-v2-and-v3) to migrate your strategy from a freqtrade v2 strategy, to strategy of version 3 which can short and trade futures.
+If you already have an existing strategy, please read the [strategy migration guide](strategy_migration.md#strategy-migration-between-v2-and-v3) to migrate your strategy from a orazen v2 strategy, to strategy of version 3 which can short and trade futures.
 
 ## Shorting
 
@@ -61,13 +61,13 @@ You will also have to pick a "margin mode" (explanation below).
 
 ##### Pair namings
 
-Freqtrade follows the [ccxt naming conventions for futures](https://docs.ccxt.com/#/README?id=perpetual-swap-perpetual-future).
+Orazen follows the [ccxt naming conventions for futures](https://docs.ccxt.com/#/README?id=perpetual-swap-perpetual-future).
 A futures pair will therefore have the naming of `base/quote:settle` (e.g. `ETH/USDT:USDT`).
 
 ### Margin mode
 
 On top of `trading_mode` - you will also have to configure your `margin_mode`.
-While freqtrade currently only supports one margin mode, this will change, and by configuring it now you're all set for future updates.
+While orazen currently only supports one margin mode, this will change, and by configuring it now you're all set for future updates.
 
 The possible values are: `isolated`, or `cross`.
 
@@ -97,7 +97,7 @@ Please read the [exchange specific notes](exchanges.md) for exchanges that suppo
 ## Set leverage to use
 
 Different strategies and risk profiles will require different levels of leverage.
-While you could configure one static leverage value - freqtrade offers you the flexibility to adjust this via [strategy leverage callback](strategy-callbacks.md#leverage-callback) - which allows you to use different leverages by pair, or based on some other factor benefitting your strategy result.
+While you could configure one static leverage value - orazen offers you the flexibility to adjust this via [strategy leverage callback](strategy-callbacks.md#leverage-callback) - which allows you to use different leverages by pair, or based on some other factor benefitting your strategy result.
 
 If not implemented, leverage defaults to 1x (no leverage).
 
@@ -111,7 +111,7 @@ If not implemented, leverage defaults to 1x (no leverage).
 A ratio specifying how large of a safety net to place between the liquidation price and the stoploss to prevent a position from reaching the liquidation price.
 This artificial liquidation price is calculated as:
 
-`freqtrade_liquidation_price = liquidation_price ± (abs(open_rate - liquidation_price) * liquidation_buffer)`
+`orazen_liquidation_price = liquidation_price ± (abs(open_rate - liquidation_price) * liquidation_buffer)`
 
 - `±` = `+` for long trades
 - `±` = `-` for short trades
@@ -121,7 +121,7 @@ Possible values are any floats between 0.0 and 0.99
 **ex:** If a trade is entered at a price of 10 coin/USDT, and the liquidation price of this trade is 8 coin/USDT, then with `liquidation_buffer` set to `0.05` the minimum stoploss for this trade would be $8 + ((10 - 8) * 0.05) = 8 + 0.1 = 8.1$
 
 !!! Danger "A `liquidation_buffer` of 0.0, or a low `liquidation_buffer` is likely to result in liquidations, and liquidation fees"
-    Currently Freqtrade is able to calculate liquidation prices, but does not calculate liquidation fees. Setting your `liquidation_buffer` to 0.0, or using a low `liquidation_buffer` could result in your positions being liquidated. Freqtrade does not track liquidation fees, so liquidations will result in inaccurate profit/loss results for your bot. If you use a low `liquidation_buffer`, it is recommended to use `stoploss_on_exchange` if your exchange supports this.
+    Currently Orazen is able to calculate liquidation prices, but does not calculate liquidation fees. Setting your `liquidation_buffer` to 0.0, or using a low `liquidation_buffer` could result in your positions being liquidated. Orazen does not track liquidation fees, so liquidations will result in inaccurate profit/loss results for your bot. If you use a low `liquidation_buffer`, it is recommended to use `stoploss_on_exchange` if your exchange supports this.
 
 ## Unavailable funding rates
 

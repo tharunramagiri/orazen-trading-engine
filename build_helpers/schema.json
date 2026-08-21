@@ -709,11 +709,11 @@
           "type": "string"
         },
         "chat_id": {
-          "description": "Telegram chat or group ID. Recommended to be set via environment variable FREQTRADE__TELEGRAM__CHAT_ID",
+          "description": "Telegram chat or group ID. Recommended to be set via environment variable ORAZEN__TELEGRAM__CHAT_ID",
           "type": "string"
         },
         "topic_id": {
-          "description": "Telegram topic ID - only applicable for group chats. Recommended to be set via environment variable FREQTRADE__TELEGRAM__TOPIC_ID",
+          "description": "Telegram topic ID - only applicable for group chats. Recommended to be set via environment variable ORAZEN__TELEGRAM__TOPIC_ID",
           "type": "string"
         },
         "authorized_users": {
@@ -876,7 +876,7 @@
           "type": "boolean"
         },
         "url": {
-          "description": "Webhook URL. Recommended to be set via environment variable FREQTRADE__WEBHOOK__URL",
+          "description": "Webhook URL. Recommended to be set via environment variable ORAZEN__WEBHOOK__URL",
           "type": "string"
         },
         "format": {
@@ -954,7 +954,7 @@
           "type": "boolean"
         },
         "webhook_url": {
-          "description": "Discord webhook URL. Recommended to be set via environment variable FREQTRADE__DISCORD__WEBHOOK_URL",
+          "description": "Discord webhook URL. Recommended to be set via environment variable ORAZEN__DISCORD__WEBHOOK_URL",
           "type": "string"
         },
         "exit_fill": {
@@ -1274,21 +1274,21 @@
           "type": "string"
         },
         "api_key": {
-          "description": "API key for the exchange. Recommended to be set via environment variable FREQTRADE__EXCHANGE__API_KEY",
+          "description": "API key for the exchange. Recommended to be set via environment variable ORAZEN__EXCHANGE__API_KEY",
           "type": [
             "string",
             "null"
           ]
         },
         "key": {
-          "description": "API key for the exchange. Recommended to be set via environment variable FREQTRADE__EXCHANGE__KEY Deprecated, use api_key instead.",
+          "description": "API key for the exchange. Recommended to be set via environment variable ORAZEN__EXCHANGE__KEY Deprecated, use api_key instead.",
           "type": [
             "string",
             "null"
           ]
         },
         "secret": {
-          "description": "API secret for the exchange. Recommended to be set via environment variable FREQTRADE__EXCHANGE__SECRET",
+          "description": "API secret for the exchange. Recommended to be set via environment variable ORAZEN__EXCHANGE__SECRET",
           "type": [
             "string",
             "null"
@@ -1296,7 +1296,7 @@
           "default": null
         },
         "password": {
-          "description": "Password for the exchange, if required. Recommended to be set via environment variable FREQTRADE__EXCHANGE__PASSWORD",
+          "description": "Password for the exchange, if required. Recommended to be set via environment variable ORAZEN__EXCHANGE__PASSWORD",
           "type": [
             "string",
             "null"
@@ -1304,28 +1304,28 @@
           "default": null
         },
         "uid": {
-          "description": "User ID for the exchange, if required. Recommended to be set via environment variable FREQTRADE__EXCHANGE__UID",
+          "description": "User ID for the exchange, if required. Recommended to be set via environment variable ORAZEN__EXCHANGE__UID",
           "type": [
             "string",
             "null"
           ]
         },
         "account_id": {
-          "description": "Account ID for the exchange, if required. Recommended to be set via environment variable FREQTRADE__EXCHANGE__ACCOUNT_ID",
+          "description": "Account ID for the exchange, if required. Recommended to be set via environment variable ORAZEN__EXCHANGE__ACCOUNT_ID",
           "type": [
             "string",
             "null"
           ]
         },
         "wallet_address": {
-          "description": "Wallet address for the exchange, if required. Usually used by DEX exchanges. Recommended to be set via environment variable FREQTRADE__EXCHANGE__WALLET_ADDRESS",
+          "description": "Wallet address for the exchange, if required. Usually used by DEX exchanges. Recommended to be set via environment variable ORAZEN__EXCHANGE__WALLET_ADDRESS",
           "type": [
             "string",
             "null"
           ]
         },
         "private_key": {
-          "description": "Private key for the exchange, if required. Usually used by DEX exchanges. Recommended to be set via environment variable FREQTRADE__EXCHANGE__PRIVATE_KEY",
+          "description": "Private key for the exchange, if required. Usually used by DEX exchanges. Recommended to be set via environment variable ORAZEN__EXCHANGE__PRIVATE_KEY",
           "type": [
             "string",
             "null"

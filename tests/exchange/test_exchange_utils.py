@@ -14,9 +14,9 @@ from ccxt import (
     TRUNCATE,
 )
 
-from freqtrade.enums import RunMode
-from freqtrade.exceptions import OperationalException
-from freqtrade.exchange import (
+from orazen.enums import RunMode
+from orazen.exceptions import OperationalException
+from orazen.exchange import (
     amount_to_contract_precision,
     amount_to_precision,
     date_minus_candles,
@@ -28,43 +28,43 @@ from freqtrade.exchange import (
     timeframe_to_resample_freq,
     timeframe_to_seconds,
 )
-from freqtrade.exchange.check_exchange import check_exchange
-from freqtrade.exchange.exchange_utils import _exchange_has_helper
+from orazen.exchange.check_exchange import check_exchange
+from orazen.exchange.exchange_utils import _exchange_has_helper
 from tests.conftest import log_has_re
 
 
 def test_check_exchange(default_conf, caplog) -> None:
-    # Test an officially supported by Freqtrade team exchange
+    # Test an officially supported by Orazen team exchange
     default_conf["runmode"] = RunMode.DRY_RUN
     default_conf.get("exchange").update({"name": "BINANCE"})
     assert check_exchange(default_conf)
     assert log_has_re(
-        r"Exchange .* is officially supported by the Freqtrade development team\.", caplog
+        r"Exchange .* is officially supported by the Orazen development team\.", caplog
     )
     caplog.clear()
 
-    # Test an officially supported by Freqtrade team exchange
+    # Test an officially supported by Orazen team exchange
     default_conf.get("exchange").update({"name": "binance"})
     assert check_exchange(default_conf)
     assert log_has_re(
-        r"Exchange \"binance\" is officially supported by the Freqtrade development team\.", caplog
+        r"Exchange \"binance\" is officially supported by the Orazen development team\.", caplog
     )
     caplog.clear()
 
-    # Test an officially supported by Freqtrade team exchange
+    # Test an officially supported by Orazen team exchange
     default_conf.get("exchange").update({"name": "binanceus"})
     assert check_exchange(default_conf)
     assert log_has_re(
-        r"Exchange \"binanceus\" is officially supported by the Freqtrade development team\.",
+        r"Exchange \"binanceus\" is officially supported by the Orazen development team\.",
         caplog,
     )
     caplog.clear()
 
-    # Test an officially supported by Freqtrade team exchange - with remapping
+    # Test an officially supported by Orazen team exchange - with remapping
     default_conf.get("exchange").update({"name": "okx"})
     assert check_exchange(default_conf)
     assert log_has_re(
-        r"Exchange \"okx\" is officially supported by the Freqtrade development team\.", caplog
+        r"Exchange \"okx\" is officially supported by the Orazen development team\.", caplog
     )
     caplog.clear()
     # Test an available exchange, supported by ccxt
@@ -73,14 +73,14 @@ def test_check_exchange(default_conf, caplog) -> None:
     assert log_has_re(
         r"Exchange .* is known to the ccxt library, available for the bot, "
         r"but not officially supported "
-        r"by the Freqtrade development team\. .*",
+        r"by the Orazen development team\. .*",
         caplog,
     )
     caplog.clear()
 
     # Test a 'bad' exchange, which known to have serious problems
     default_conf.get("exchange").update({"name": "bitmex"})
-    with pytest.raises(OperationalException, match=r"Exchange .* will not work with Freqtrade\..*"):
+    with pytest.raises(OperationalException, match=r"Exchange .* will not work with Orazen\..*"):
         check_exchange(default_conf)
     caplog.clear()
 
@@ -90,7 +90,7 @@ def test_check_exchange(default_conf, caplog) -> None:
     assert log_has_re(
         r"Exchange .* is known to the ccxt library, available for the bot, "
         r"but not officially supported "
-        r"by the Freqtrade development team\. .*",
+        r"by the Orazen development team\. .*",
         caplog,
     )
     caplog.clear()

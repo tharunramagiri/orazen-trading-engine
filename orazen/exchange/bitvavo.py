@@ -1,0 +1,24 @@
+"""Bitvavo exchange subclass."""
+
+import logging
+
+from orazen.exchange import Exchange
+from orazen.exchange.exchange_types import FtHas
+
+
+logger = logging.getLogger(__name__)
+
+
+class Bitvavo(Exchange):
+    """Bitvavo exchange class.
+
+    Contains adjustments needed for Orazen to work with this exchange.
+
+    Please note that this exchange is not included in the list of exchanges
+    officially supported by the Orazen development team. So some features
+    may still not work as expected.
+    """
+
+    _ft_has: FtHas = {
+        "ohlcv_candle_limit": 1440,
+    }

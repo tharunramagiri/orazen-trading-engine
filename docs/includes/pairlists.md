@@ -280,7 +280,7 @@ You can limit the length of the pairlist with the optional parameter `number_ass
 
 #### RemotePairList
 
-It allows the user to fetch a pairlist from a remote server or a locally stored json file within the freqtrade directory, enabling dynamic updates and customization of the trading pairlist.
+It allows the user to fetch a pairlist from a remote server or a locally stored json file within the orazen directory, enabling dynamic updates and customization of the trading pairlist.
 
 The RemotePairList is defined in the pairlists section of the configuration settings. It uses the following configuration options:
 
@@ -404,7 +404,7 @@ Coins like 1000PEPE/USDT or KPEPE/USDT:USDT are detected on a best effort basis,
     Each added category corresponds to one API call to CoinGecko. The more categories you add, the longer the pairlist generation will take, potentially causing rate limit issues.
 
 !!! Danger "Duplicate symbols in coingecko"
-    Coingecko often has duplicate symbols, where the same symbol is used for different coins. Freqtrade will use the symbol as is and try to search for it on the exchange. If the symbol exists - it will be used. Freqtrade will however not check if the _intended_ symbol is the one coingecko meant. This can sometimes lead to unexpected results, especially on low volume coins or with meme coin categories.
+    Coingecko often has duplicate symbols, where the same symbol is used for different coins. Orazen will use the symbol as is and try to search for it on the exchange. If the symbol exists - it will be used. Orazen will however not check if the _intended_ symbol is the one coingecko meant. This can sometimes lead to unexpected results, especially on low volume coins or with meme coin categories.
 
 #### CrossMarketPairList
 
@@ -420,7 +420,7 @@ When pairs are first listed on an exchange they can suffer huge price drops and 
 in the first few days while the pair goes through its price-discovery period. Bots can often
 be caught out buying before the pair has finished dropping in price.
 
-This filter allows freqtrade to ignore pairs until they have been listed for at least `min_days_listed` days and listed before `max_days_listed`.
+This filter allows orazen to ignore pairs until they have been listed for at least `min_days_listed` days and listed before `max_days_listed`.
 
 #### DelistFilter
 

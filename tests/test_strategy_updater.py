@@ -4,8 +4,8 @@ import re
 import shutil
 from pathlib import Path
 
-from freqtrade.commands.strategy_utils_commands import start_strategy_update
-from freqtrade.strategy.strategyupdater import StrategyUpdater
+from orazen.commands.strategy_utils_commands import start_strategy_update
+from orazen.strategy.strategyupdater import StrategyUpdater
 from tests.conftest import get_args
 
 

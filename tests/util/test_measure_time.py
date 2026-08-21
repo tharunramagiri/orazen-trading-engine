@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import time_machine
 
-from freqtrade.util import MeasureTime
+from orazen.util import MeasureTime
 
 
 def test_measure_time():

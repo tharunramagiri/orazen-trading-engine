@@ -3,12 +3,12 @@ from datetime import timedelta
 import pytest
 from pandas import DataFrame, Timestamp
 
-from freqtrade.data.btanalysis import (
+from orazen.data.btanalysis import (
     analyze_trade_parallelism,
     load_backtest_data,
 )
-from freqtrade.data.btanalysis.trade_parallelism import balance_distribution_over_time
-from freqtrade.util import dt_utc
+from orazen.data.btanalysis.trade_parallelism import balance_distribution_over_time
+from orazen.util import dt_utc
 
 
 def test_analyze_trade_parallelism(testdatadir):

@@ -4,14 +4,14 @@ This page explains how to customize your strategies, add new indicators and set 
 
 If you haven't already, please familiarize yourself with:
 
-- the [Freqtrade strategy 101](strategy-101.md), which provides a quick start to strategy development
-- the [Freqtrade bot basics](bot-basics.md), which provides overall info on how the bot operates
+- the [Orazen strategy 101](strategy-101.md), which provides a quick start to strategy development
+- the [Orazen bot basics](bot-basics.md), which provides overall info on how the bot operates
 
 ## Develop your own strategy
 
 The bot includes a default strategy file.
 
-Also, several other strategies are available in the [strategy repository](https://github.com/freqtrade/freqtrade-strategies).
+Also, several other strategies are available in the [strategy repository](https://github.com/orazen/orazen-strategies).
 
 You will however most likely have your own idea for a strategy.
 
@@ -22,19 +22,19 @@ This document intends to help you convert your ideas into a working strategy.
 To get started, you can use the command:
 
 ```bash
-freqtrade new-strategy --strategy AwesomeStrategy
+orazen new-strategy --strategy AwesomeStrategy
 ```
 
 This will create a new strategy called `AwesomeStrategy` from a template, which will be located using the filename `user_data/strategies/AwesomeStrategy.py`.
 
 !!! Note
-    There is a difference between the *name* of the strategy and the filename. In most commands, Freqtrade uses the *name* of the strategy, *not the filename*.
+    There is a difference between the *name* of the strategy and the filename. In most commands, Orazen uses the *name* of the strategy, *not the filename*.
 
 !!! Note
     The `new-strategy` command generates starting examples which will not be profitable out of the box.
 
 ??? Hint "Different template levels"
-    `freqtrade new-strategy` has an additional parameter, `--template`, which controls the amount of pre-build information you get in the created strategy. Use `--template minimal` to get an empty strategy without any indicator examples, or `--template advanced` to get a template with more complicated features defined.
+    `orazen new-strategy` has an additional parameter, `--template`, which controls the amount of pre-build information you get in the created strategy. Use `--template minimal` to get an empty strategy without any indicator examples, or `--template advanced` to get a template with more complicated features defined.
 
 ### Anatomy of a strategy
 
@@ -66,12 +66,12 @@ You may see older strategies set to interface version 2, and these will need to 
 Starting the bot in dry or live mode is accomplished using the `trade` command:
 
 ```bash
-freqtrade trade --strategy AwesomeStrategy
+orazen trade --strategy AwesomeStrategy
 ```
 
 ### Bot modes
 
-Freqtrade strategies can be processed by the Freqtrade bot in 5 main modes:
+Orazen strategies can be processed by the Orazen bot in 5 main modes:
 
 - backtesting
 - hyperopting
@@ -85,7 +85,7 @@ Check the [configuration documentation](configuration.md) about how to set the b
 
 ## Diving in deeper
 
-**For the following section we will use the [user_data/strategies/sample_strategy.py](https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py)
+**For the following section we will use the [user_data/strategies/sample_strategy.py](https://github.com/orazen/orazen/blob/develop/orazen/templates/sample_strategy.py)
 file as reference.**
 
 !!! Note "Strategies and Backtesting"
@@ -100,14 +100,14 @@ file as reference.**
     Some common patterns for this are listed in the [Common Mistakes](#common-mistakes-when-developing-strategies) section of this document.
 
 ??? Hint "Lookahead and recursive analysis"
-    Freqtrade includes two helpful commands to help assess common lookahead (using future data) and
+    Orazen includes two helpful commands to help assess common lookahead (using future data) and
     recursive bias (variance in indicator values) issues. Before running a strategy in dry or live more,
     you should always use these commands first. Please check the relevant documentation for
     [lookahead](lookahead-analysis.md) and [recursive](recursive-analysis.md) analysis.
 
 ### Dataframe
 
-Freqtrade uses [pandas](https://pandas.pydata.org/) to store/provide the candlestick (OHLCV) data.
+Orazen uses [pandas](https://pandas.pydata.org/) to store/provide the candlestick (OHLCV) data.
 Pandas is a great library developed for processing large amounts of data in tabular format.
 
 Each row in a dataframe corresponds to one candle on a chart, with the latest complete candle always being the last in the dataframe (sorted by date).
@@ -143,7 +143,7 @@ This must instead be written in a pandas-compatible way, so the operation is per
 
 With this section, you have a new column in your dataframe, which has `1` assigned whenever RSI is above 30.
 
-Freqtrade uses this new column as an entry signal, where it is assumed that a trade will subsequently open on the next open candle.
+Orazen uses this new column as an entry signal, where it is assumed that a trade will subsequently open on the next open candle.
 
 Pandas provides fast ways to calculate metrics, i.e. "vectorisation". To benefit from this speed, it is advised to not use loops, but use vectorized methods instead.
 
@@ -162,11 +162,11 @@ Vectorized operations perform calculations across the whole range of data and ar
 
 #### Why can't I see "real time" candle data?
 
-Freqtrade does not store incomplete/unfinished candles in the dataframe.
+Orazen does not store incomplete/unfinished candles in the dataframe.
 
 The use of incomplete data for making strategy decisions is called "repainting" and you might see other platforms allow this.
 
-Freqtrade does not. Only complete/finished candle data is available in the dataframe.
+Orazen does not. Only complete/finished candle data is available in the dataframe.
 
 ### Customize Indicators
 
@@ -222,22 +222,22 @@ def populate_indicators(self, dataframe: DataFrame, metadata: dict) -> DataFrame
 ```
 
 !!! Note "Want more indicator examples?"
-    Look into the [user_data/strategies/sample_strategy.py](https://github.com/freqtrade/freqtrade/blob/develop/freqtrade/templates/sample_strategy.py).
+    Look into the [user_data/strategies/sample_strategy.py](https://github.com/orazen/orazen/blob/develop/orazen/templates/sample_strategy.py).
     Then uncomment indicators you need.
 
 #### Indicator libraries
 
-Out of the box, freqtrade installs the following technical libraries:
+Out of the box, orazen installs the following technical libraries:
 
 - [ta-lib](https://ta-lib.github.io/ta-lib-python/) (Detailed documentation of included functions: [Ta-Lib](https://ta-lib.org/))
 - [pandas-ta](https://twopirllc.github.io/pandas-ta/)
-- [technical](https://technical.freqtrade.io)
+- [technical](https://technical.orazen.io)
 
 Additional technical libraries can be installed as necessary, or custom indicators may be written / invented by the strategy author.
 
 ### Strategy startup period
 
-Some indicators have an unstable startup period in which there isn't enough candle data to calculate any values (NaN), or the calculation is incorrect. This can lead to inconsistencies, since Freqtrade does not know how long this unstable period is and uses whatever indicator values are in the dataframe.
+Some indicators have an unstable startup period in which there isn't enough candle data to calculate any values (NaN), or the calculation is incorrect. This can lead to inconsistencies, since Orazen does not know how long this unstable period is and uses whatever indicator values are in the dataframe.
 
 To account for this, the strategy can be assigned the `startup_candle_count` attribute.
 
@@ -255,9 +255,9 @@ By letting the bot know how much history is needed, backtest trades can start at
 
 !!! Warning "Using x calls to get OHLCV"
     If you receive a warning like `WARNING - Using 3 calls to get OHLCV. This can result in slower operations for the bot. Please check if you really need 1500 candles for your strategy` - you should consider if you really need this much historic data for your signals.
-    Having this will cause Freqtrade to make multiple calls for the same pair, which will obviously be slower than one network request.
-    As a consequence, Freqtrade will take longer to refresh candles - and should therefore be avoided if possible.
-    This is capped to 5 total calls to avoid overloading the exchange, or make freqtrade too slow.
+    Having this will cause Orazen to make multiple calls for the same pair, which will obviously be slower than one network request.
+    As a consequence, Orazen will take longer to refresh candles - and should therefore be avoided if possible.
+    This is capped to 5 total calls to avoid overloading the exchange, or make orazen too slow.
 
 !!! Warning
     `startup_candle_count` should be below `ohlcv_candle_limit * 5` (which is 500 * 5 for most exchanges) - since only this amount of candles will be available during Dry-Run/Live Trade operations.
@@ -267,7 +267,7 @@ By letting the bot know how much history is needed, backtest trades can start at
 Let's try to backtest 1 month (January 2019) of 5m candles using an example strategy with EMA100, as above.
 
 ``` bash
-freqtrade backtesting --timerange 20190101-20190201 --timeframe 5m
+orazen backtesting --timerange 20190101-20190201 --timeframe 5m
 ```
 
 Assuming `startup_candle_count` is set to 400, backtesting knows it needs 400 candles to generate valid entry signals. It will load data from `20190101 - (400 * 5m)` - which is ~2018-12-30 11:40:00.
@@ -448,7 +448,7 @@ To use times based on candle duration (timeframe), the following snippet can be 
 This will allow you to change the timeframe for the strategy, but the minimal ROI times will still be set as candles, e.g. after 3 candles.
 
 ``` python
-from freqtrade.exchange import timeframe_to_minutes
+from orazen.exchange import timeframe_to_minutes
 
 class AwesomeStrategy(IStrategy):
 
@@ -509,17 +509,17 @@ Instead, please check the [Storing information](strategy-advanced.md#storing-inf
 
 ## Strategy file loading
 
-By default, freqtrade will attempt to load strategies from all `.py` files within the `userdir` (default `user_data/strategies`).
+By default, orazen will attempt to load strategies from all `.py` files within the `userdir` (default `user_data/strategies`).
 
-Assuming your strategy is called `AwesomeStrategy`, stored in the file `user_data/strategies/AwesomeStrategy.py`, then you can start freqtrade in dry (or live, depending on your configuration) mode with:
+Assuming your strategy is called `AwesomeStrategy`, stored in the file `user_data/strategies/AwesomeStrategy.py`, then you can start orazen in dry (or live, depending on your configuration) mode with:
 
 ```bash
-freqtrade trade --strategy AwesomeStrategy
+orazen trade --strategy AwesomeStrategy
 ```
 
 Note that we're using the class name, not the file name.
 
-You can use `freqtrade list-strategies` to see a list of all strategies Freqtrade is able to load (all strategies in the correct folder).
+You can use `orazen list-strategies` to see a list of all strategies Orazen is able to load (all strategies in the correct folder).
 It will also include a "status" field, highlighting potential problems.
 
 ??? Hint "Customize strategy directory"
@@ -635,7 +635,7 @@ after two effective informative timeframes without an update, so unused informat
 remain cached indefinitely. For example, 15m informative timeframe will expire 30 minutes after the last 15m informative candle was refreshed.
 
 The `date_merge` column name is _reserved_ while informative decorators are being merged. It must not
-be returned by informative callbacks or column formatters, or exist in the base dataframe before informative merging. Freqtrade will raise an exception if this is violated to avoid unexpected merge behavior.
+be returned by informative callbacks or column formatters, or exist in the base dataframe before informative merging. Orazen will raise an exception if this is violated to avoid unexpected merge behavior.
 
 ??? Example "Fast and easy way to define informative pairs"
 
@@ -644,8 +644,8 @@ be returned by informative callbacks or column formatters, or exist in the base 
     ``` python
 
     from datetime import datetime
-    from freqtrade.persistence import Trade
-    from freqtrade.strategy import IStrategy, informative
+    from orazen.persistence import Trade
+    from orazen.strategy import IStrategy, informative
 
     class AwesomeStrategy(IStrategy):
         
@@ -855,7 +855,7 @@ informative = self.dp.get_pair_dataframe(pair=inf_pair,
 
 ### *get_analyzed_dataframe(pair, timeframe)*
 
-This method is used by freqtrade internally to determine the last signal.
+This method is used by orazen internally to determine the last signal.
 It can also be used in specific callbacks to get the signal that caused the action (see [Advanced Strategy Documentation](strategy-advanced.md) for more details on available callbacks).
 
 ``` python
@@ -1007,7 +1007,7 @@ Notifications will only be sent in trading modes (Live/Dry-run) - so this method
 ### Complete DataProvider sample
 
 ```python
-from freqtrade.strategy import IStrategy, merge_informative_pair
+from orazen.strategy import IStrategy, merge_informative_pair
 from pandas import DataFrame
 
 class SampleStrategy(IStrategy):
@@ -1102,7 +1102,7 @@ A history of trades can be retrieved in the strategy by querying the database.
 At the top of the file, import the required object:
 
 ```python
-from freqtrade.persistence import Trade
+from orazen.persistence import Trade
 ```
 
 The following example queries trades from today for the current pair (`metadata['pair']`). Other filters can easily be added.
@@ -1123,7 +1123,7 @@ For a full list of available methods, please consult the [Trade object](trade-ob
 
 ## Prevent trades from happening for a specific pair
 
-Freqtrade locks pairs automatically for the current candle (until that candle is over) when a pair exits, preventing an immediate re-entry of that pair.
+Orazen locks pairs automatically for the current candle (until that candle is over) when a pair exits, preventing an immediate re-entry of that pair.
 
 This is to prevent "waterfalls" of many and frequent trades within a single candle.
 
@@ -1133,7 +1133,7 @@ Locked pairs will show the message `Pair <pair> is currently locked.`.
 
 Sometimes it may be desired to lock a pair after certain events happen (e.g. multiple losing trades in a row).
 
-Freqtrade has an easy method to do this from within the strategy, by calling `self.lock_pair(pair, until, [reason])`.
+Orazen has an easy method to do this from within the strategy, by calling `self.lock_pair(pair, until, [reason])`.
 `until` must be a datetime object in the future, after which trading will be re-enabled for that pair, while `reason` is an optional string detailing why the pair was locked.
 
 Locks can also be lifted manually, by calling `self.unlock_pair(pair)` or `self.unlock_reason(<reason>)`, providing the reason the pair was unlocked.
@@ -1150,7 +1150,7 @@ To verify if a pair is currently locked, use `self.is_pair_locked(pair)`.
 #### Pair locking example
 
 ``` python
-from freqtrade.persistence import Trade
+from orazen.persistence import Trade
 from datetime import timedelta, datetime, timezone
 # Put the above lines at the top of the strategy file, next to all the other imports
 # --------
@@ -1214,7 +1214,7 @@ The following list contains some common patterns which should be avoided to prev
 
 ### Colliding signals
 
-When conflicting signals collide (e.g. both `'enter_long'` and `'exit_long'` are set to `1`), freqtrade will do nothing and ignore the entry signal. This will avoid trades that enter, and exit immediately. Obviously, this can potentially lead to missed entries.
+When conflicting signals collide (e.g. both `'enter_long'` and `'exit_long'` are set to `1`), orazen will do nothing and ignore the entry signal. This will avoid trades that enter, and exit immediately. Obviously, this can potentially lead to missed entries.
 
 The following rules apply, and entry signals will be ignored if more than one of the 3 signals is set:
 
@@ -1223,7 +1223,7 @@ The following rules apply, and entry signals will be ignored if more than one of
 
 ## Further strategy ideas
 
-To get additional ideas for strategies, head over to the [strategy repository](https://github.com/freqtrade/freqtrade-strategies). Feel free to use them as examples, but results will depend on the current market situation, pairs used, etc. Therefore, these strategies should be considered only for learning purposes, not real world trading. Please backtest the strategy for your exchange/desired pairs first, then dry run to evaluate carefully, and use at your own risk.
+To get additional ideas for strategies, head over to the [strategy repository](https://github.com/orazen/orazen-strategies). Feel free to use them as examples, but results will depend on the current market situation, pairs used, etc. Therefore, these strategies should be considered only for learning purposes, not real world trading. Please backtest the strategy for your exchange/desired pairs first, then dry run to evaluate carefully, and use at your own risk.
 
 Feel free to use any of them as inspiration for your own strategies. We're happy to accept Pull Requests containing new strategies to the repository.
 

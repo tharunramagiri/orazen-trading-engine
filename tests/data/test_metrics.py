@@ -4,12 +4,12 @@ import numpy as np
 import pytest
 from pandas import DataFrame, DateOffset, Timestamp, to_datetime
 
-from freqtrade.configuration import TimeRange
-from freqtrade.data.btanalysis import (
+from orazen.configuration import TimeRange
+from orazen.data.btanalysis import (
     load_backtest_data,
 )
-from freqtrade.data.history import load_data, load_pair_history
-from freqtrade.data.metrics import (
+from orazen.data.history import load_data, load_pair_history
+from orazen.data.metrics import (
     calculate_cagr,
     calculate_calmar,
     calculate_calmar_from_balance,
@@ -29,7 +29,7 @@ from freqtrade.data.metrics import (
     combined_dataframes_with_rel_mean,
     create_cum_profit,
 )
-from freqtrade.util import dt_utc
+from orazen.util import dt_utc
 
 
 def test_calculate_market_change(testdatadir):
@@ -591,7 +591,7 @@ def test_calculate_max_drawdown2():
 )
 def test_calculate_max_drawdown_abs(profits, relative, highd, lowdays, result, result_rel):
     """
-    Test case from issue https://github.com/freqtrade/freqtrade/issues/6655
+    Test case from issue https://github.com/orazen/orazen/issues/6655
     [1000, 500,  1000, 11000, 10000] # absolute results
     [1000, 50%,  0%,   0%,       ~9%]   # Relative drawdowns
     """

@@ -48,6 +48,6 @@ jobs:
     - uses: stefanzweifel/git-auto-commit-action@4a55954c782fc1ea30b9056cd3e7a2b40ca8887d # v7.2.0
       with:
         commit_message: "chore(deps): Apply pre-commit types update"
-        commit_user_name: Freqtrade Bot
-        commit_user_email: 154552126+freqtrade-bot@users.noreply.github.com
-        commit_author: Freqtrade Bot <154552126+freqtrade-bot@users.noreply.github.com>
+        commit_user_name: Orazen Bot
+        commit_user_email: 154552126+orazen-bot@users.noreply.github.com
+        commit_author: Orazen Bot <154552126+orazen-bot@users.noreply.github.com>

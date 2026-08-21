@@ -19,7 +19,7 @@ Sample configuration:
         "enable_openapi": false,
         "jwt_secret_key": "somethingRandomSomethingRandom123",
         "CORS_origins": [],
-        "username": "Freqtrader",
+        "username": "Orazenr",
         "password": "SuperSecret1!",
         "ws_token": "sercet_Ws_t0ken"
     },
@@ -67,7 +67,7 @@ If you run your bot using docker, you'll need to have the bot listen to incoming
         "enabled": true,
         "listen_ip_address": "0.0.0.0",
         "listen_port": 8080,
-        "username": "Freqtrader",
+        "username": "Orazenr",
         "password": "SuperSecret1!",
         //...
     },
@@ -88,14 +88,14 @@ Make sure that the following 2 lines are available in your docker-compose file:
 
 ### Consuming the API
 
-We advise consuming the API by using the supported `freqtrade-client` package (also available as `scripts/rest_client.py`).
+We advise consuming the API by using the supported `orazen-client` package (also available as `scripts/rest_client.py`).
 
-This command can be installed independent of any running freqtrade bot by using `pip install freqtrade-client`.
+This command can be installed independent of any running orazen bot by using `pip install orazen-client`.
 
-This module is designed to be lightweight, and only depends on the `requests` and `python-rapidjson` modules, skipping all heavy dependencies freqtrade otherwise needs.
+This module is designed to be lightweight, and only depends on the `requests` and `python-rapidjson` modules, skipping all heavy dependencies orazen otherwise needs.
 
 ``` bash
-freqtrade-client <command> [optional parameters]
+orazen-client <command> [optional parameters]
 ```
 
 By default, the script assumes `127.0.0.1` (localhost) and port `8080` to be used, however you can specify a configuration file to override this behaviour.
@@ -108,7 +108,7 @@ By default, the script assumes `127.0.0.1` (localhost) and port `8080` to be use
         "enabled": true,
         "listen_ip_address": "0.0.0.0",
         "listen_port": 8080,
-        "username": "Freqtrader",
+        "username": "Orazenr",
         "password": "SuperSecret1!",
         //...
     }
@@ -116,23 +116,23 @@ By default, the script assumes `127.0.0.1` (localhost) and port `8080` to be use
 ```
 
 ``` bash
-freqtrade-client --config rest_config.json <command> [optional parameters]
+orazen-client --config rest_config.json <command> [optional parameters]
 ```
 
 Commands with many arguments may require keyword arguments (for clarity) - which can be provided as follows:
 
 ``` bash
-freqtrade-client --config rest_config.json forceenter BTC/USDT long enter_tag=GutFeeling
+orazen-client --config rest_config.json forceenter BTC/USDT long enter_tag=GutFeeling
 ```
 
 This method will work for all arguments - check the "show" command for a list of available parameters.
 
 ??? Note "Programmatic use"
-    The `freqtrade-client` package (installable independent of freqtrade) can be used in your own scripts to interact with the freqtrade API.
+    The `orazen-client` package (installable independent of orazen) can be used in your own scripts to interact with the orazen API.
     to do so, please use the following:
 
     ``` python
-    from freqtrade_client import FtRestClient
+    from orazen_client import FtRestClient
     
 
     client = FtRestClient(server_url, username, password)
@@ -150,15 +150,15 @@ This method will work for all arguments - check the "show" command for a list of
 
     For a full list of available commands, please refer to the list below.
 
-#### Freqtrade client- available commands
+#### Orazen client- available commands
 
 Possible commands can be listed from the rest-client script using the `help` command.
 
 ``` bash
-freqtrade-client help
+orazen-client help
 ```
 
---8<-- "commands/freqtrade-client.md"
+--8<-- "commands/orazen-client.md"
 
 
 ### Available endpoints
@@ -219,10 +219,10 @@ All endpoints in the below table need to be prefixed with the base URL of the AP
 
 ### Message WebSocket
 
-The API Server includes a websocket endpoint for subscribing to RPC messages from the freqtrade Bot.
+The API Server includes a websocket endpoint for subscribing to RPC messages from the orazen Bot.
 This can be used to consume real-time data from your bot, such as entry/exit fill messages, whitelist changes, populated indicators for pairs, and more.
 
-This is also used to setup [Producer/Consumer mode](producer-consumer.md) in Freqtrade.
+This is also used to setup [Producer/Consumer mode](producer-consumer.md) in Orazen.
 
 Assuming your rest API is set to `127.0.0.1` on port `8080`, the endpoint is available at `http://localhost:8080/api/v1/message/ws`.
 
@@ -247,7 +247,7 @@ You would then add that token under `ws_token` in your `api_server` config. Like
     "enable_openapi": false,
     "jwt_secret_key": "somethingRandomSomethingRandom123",
     "CORS_origins": [],
-    "username": "Freqtrader",
+    "username": "Orazenr",
     "password": "SuperSecret1!",
     "ws_token": "hZ-y58LXyX_HZ8O1cJzVyN6ePWrLpNQv4Q" // <-----
 },
@@ -269,7 +269,7 @@ Once connected to the WebSocket, the bot will broadcast RPC messages to anyone w
 }
 ```
 
-For a list of message types, please refer to the RPCMessageType enum in `freqtrade/enums/rpcmessagetype.py`
+For a list of message types, please refer to the RPCMessageType enum in `orazen/enums/rpcmessagetype.py`
 
 Now anytime those types of RPC messages are sent in the bot, you will receive them through the WebSocket as long as the connection is active. They typically take the same form as the request:
 
@@ -288,7 +288,7 @@ Now anytime those types of RPC messages are sent in the bot, you will receive th
 
 When using [Nginx](https://nginx.org/en/docs/), the following configuration is required for WebSockets to work (Note this configuration is incomplete, it's missing some information and can not be used as is):
 
-Please make sure to replace `<freqtrade_listen_ip>` (and the subsequent port) with the IP and Port matching your configuration/setup.
+Please make sure to replace `<orazen_listen_ip>` (and the subsequent port) with the IP and Port matching your configuration/setup.
 
 ```
 http {
@@ -304,7 +304,7 @@ http {
 
         location / {
             proxy_http_version 1.1;
-            proxy_pass http://<freqtrade_listen_ip>:8080;
+            proxy_pass http://<orazen_listen_ip>:8080;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection $connection_upgrade;
             proxy_set_header Host $host;
@@ -320,7 +320,7 @@ To properly configure your reverse proxy (securely), please consult it's documen
 
 !!! Tip "SSL certificates"
     You can use tools like certbot to setup ssl certificates to access your bot's UI through encrypted connection by using any of the above reverse proxies.
-    While this will protect your data in transit, we do not recommend to run the freqtrade API outside of your private network (VPN, SSH tunnel).
+    While this will protect your data in transit, we do not recommend to run the orazen API outside of your private network (VPN, SSH tunnel).
 
 ### OpenAPI interface
 
@@ -330,13 +330,13 @@ This will enable the Swagger UI at the `/docs` endpoint. By default, that's runn
 ### Advanced API usage using JWT tokens
 
 !!! Note
-    The below should be done in an application (a Freqtrade REST API client, which fetches info via API), and is not intended to be used on a regular basis.
+    The below should be done in an application (a Orazen REST API client, which fetches info via API), and is not intended to be used on a regular basis.
 
-Freqtrade's REST API also offers JWT (JSON Web Tokens).
+Orazen's REST API also offers JWT (JSON Web Tokens).
 You can login using the following command, and subsequently use the resulting access_token.
 
 ``` bash
-> curl -X POST --user Freqtrader http://localhost:8080/api/v1/token/login
+> curl -X POST --user Orazenr http://localhost:8080/api/v1/token/login
 {"access_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk2ODEsIm5iZiI6MTU4OTExOTY4MSwianRpIjoiMmEwYmY0NWUtMjhmOS00YTUzLTlmNzItMmM5ZWVlYThkNzc2IiwiZXhwIjoxNTg5MTIwNTgxLCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.qt6MAXYIa-l556OM7arBvYJ0SDI9J8bIk3_glDujF5g","refresh_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk2ODEsIm5iZiI6MTU4OTExOTY4MSwianRpIjoiZWQ1ZWI3YjAtYjMwMy00YzAyLTg2N2MtNWViMjIxNWQ2YTMxIiwiZXhwIjoxNTkxNzExNjgxLCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJ0eXBlIjoicmVmcmVzaCJ9.d1AT_jYICyTAjD0fiQAr52rkRqtxCjUGEMwlNuuzgNQ"}
 
 > access_token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1ODkxMTk2ODEsIm5iZiI6MTU4OTExOTY4MSwianRpIjoiMmEwYmY0NWUtMjhmOS00YTUzLTlmNzItMmM5ZWVlYThkNzc2IiwiZXhwIjoxNTg5MTIwNTgxLCJpZGVudGl0eSI6eyJ1IjoiRnJlcXRyYWRlciJ9LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.qt6MAXYIa-l556OM7arBvYJ0SDI9J8bIk3_glDujF5g"

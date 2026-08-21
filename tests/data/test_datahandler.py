@@ -10,18 +10,18 @@ from pandas import DataFrame, Timestamp
 from pandas.testing import assert_frame_equal
 from pyarrow import ArrowNotImplementedError
 
-from freqtrade.configuration import TimeRange
-from freqtrade.constants import AVAILABLE_DATAHANDLERS
-from freqtrade.data.history.datahandlers.featherdatahandler import FeatherDataHandler
-from freqtrade.data.history.datahandlers.idatahandler import (
+from orazen.configuration import TimeRange
+from orazen.constants import AVAILABLE_DATAHANDLERS
+from orazen.data.history.datahandlers.featherdatahandler import FeatherDataHandler
+from orazen.data.history.datahandlers.idatahandler import (
     IDataHandler,
     get_datahandler,
     get_datahandlerclass,
 )
-from freqtrade.data.history.datahandlers.jsondatahandler import JsonDataHandler, JsonGzDataHandler
-from freqtrade.data.history.datahandlers.parquetdatahandler import ParquetDataHandler
-from freqtrade.enums import CandleType, TradingMode
-from freqtrade.exceptions import OperationalException
+from orazen.data.history.datahandlers.jsondatahandler import JsonDataHandler, JsonGzDataHandler
+from orazen.data.history.datahandlers.parquetdatahandler import ParquetDataHandler
+from orazen.enums import CandleType, TradingMode
+from orazen.exceptions import OperationalException
 from tests.conftest import log_has, log_has_re
 
 
@@ -366,15 +366,15 @@ def test_generic_datahandler_ohlcv_load_and_resave(
     # Try loading a file that exists but errors - Arrow fails, so the pandas reader is
     # used as fallback, which errors as well.
     mocker.patch(
-        "freqtrade.data.history.datahandlers.arrowdatahandler.dataset.dataset",
+        "orazen.data.history.datahandlers.arrowdatahandler.dataset.dataset",
         side_effect=ValueError("Test"),
     )
     mocker.patch(
-        "freqtrade.data.history.datahandlers.featherdatahandler.read_feather",
+        "orazen.data.history.datahandlers.featherdatahandler.read_feather",
         side_effect=Exception("Test"),
     )
     mocker.patch(
-        "freqtrade.data.history.datahandlers.parquetdatahandler.read_parquet",
+        "orazen.data.history.datahandlers.parquetdatahandler.read_parquet",
         side_effect=Exception("Test"),
     )
     ohlcv_e = dh1.ohlcv_load("UNITTEST/NEW", timeframe, candle_type=candle_type)
@@ -536,7 +536,7 @@ def test_feather_trades_timerange_pushdown_fallback(
 ):
     # Pushdown filter should fail, so fallback should load the entire file
     mocker.patch(
-        "freqtrade.data.history.datahandlers.arrowdatahandler.dataset.dataset",
+        "orazen.data.history.datahandlers.arrowdatahandler.dataset.dataset",
         side_effect=exception,
     )
 
@@ -727,7 +727,7 @@ def test_ohlcv_load_pushdown_fallback(feather_dh, mocker, caplog, exception):
     expected = feather_dh.ohlcv_load("UNITTEST/BTC", "5m", "spot", timerange=tr)
 
     mocker.patch(
-        "freqtrade.data.history.datahandlers.arrowdatahandler.dataset.dataset",
+        "orazen.data.history.datahandlers.arrowdatahandler.dataset.dataset",
         side_effect=exception,
     )
 

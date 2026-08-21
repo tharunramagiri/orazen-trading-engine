@@ -11,9 +11,9 @@ import pytest
 from numpy import nan
 from pandas import DataFrame, to_datetime
 
-from freqtrade.constants import DEFAULT_DATAFRAME_COLUMNS
-from freqtrade.enums import CandleType, MarginMode, RunMode, TradingMode
-from freqtrade.exceptions import (
+from orazen.constants import DEFAULT_DATAFRAME_COLUMNS
+from orazen.enums import CandleType, MarginMode, RunMode, TradingMode
+from orazen.exceptions import (
     ConfigurationError,
     DDosProtection,
     DependencyException,
@@ -24,7 +24,7 @@ from freqtrade.exceptions import (
     PricingError,
     TemporaryError,
 )
-from freqtrade.exchange import (
+from orazen.exchange import (
     Binance,
     Bybit,
     Exchange,
@@ -34,13 +34,13 @@ from freqtrade.exchange import (
     timeframe_to_msecs,
     timeframe_to_prev_date,
 )
-from freqtrade.exchange.common import (
+from orazen.exchange.common import (
     API_FETCH_ORDER_RETRY_COUNT,
     API_RETRY_COUNT,
     calculate_backoff,
 )
-from freqtrade.resolvers.exchange_resolver import ExchangeResolver
-from freqtrade.util import dt_now, dt_ts, dt_utc
+from orazen.resolvers.exchange_resolver import ExchangeResolver
+from orazen.util import dt_now, dt_ts, dt_utc
 from tests.conftest import (
     EXMS,
     generate_test_data_raw,
@@ -117,7 +117,7 @@ def ccxt_exceptionhandlers(
     retries=API_RETRY_COUNT + 1,
     **kwargs,
 ):
-    with patch("freqtrade.exchange.common.time.sleep"):
+    with patch("orazen.exchange.common.time.sleep"):
         with pytest.raises(DDosProtection):
             api_mock.__dict__[mock_ccxt_fun] = MagicMock(side_effect=ccxt.DDoSProtection("DDos"))
             exchange = get_patched_exchange(mocker, default_conf, api_mock, exchange=exchange_name)
@@ -140,7 +140,7 @@ def ccxt_exceptionhandlers(
 async def async_ccxt_exception(
     mocker, default_conf, api_mock, fun, mock_ccxt_fun, retries=API_RETRY_COUNT + 1, **kwargs
 ):
-    with patch("freqtrade.exchange.common.asyncio.sleep", get_mock_coro(None)):
+    with patch("orazen.exchange.common.asyncio.sleep", get_mock_coro(None)):
         with pytest.raises(DDosProtection):
             api_mock.__dict__[mock_ccxt_fun] = MagicMock(side_effect=ccxt.DDoSProtection("Dooh"))
             exchange = get_patched_exchange(mocker, default_conf, api_mock)
@@ -839,7 +839,7 @@ def test_validate_timeframes_failed(default_conf, mocker):
     default_conf["timeframe"] = "15s"
 
     with pytest.raises(
-        ConfigurationError, match=r"Timeframes < 1m are currently not supported by Freqtrade."
+        ConfigurationError, match=r"Timeframes < 1m are currently not supported by Orazen."
     ):
         Exchange(default_conf)
 
@@ -3213,7 +3213,7 @@ async def test__async_get_candle_history(default_conf, mocker, caplog, exchange_
 
 
 async def test__async_kucoin_get_candle_history(default_conf, mocker, caplog):
-    from freqtrade.exchange.common import _reset_logging_mixin
+    from orazen.exchange.common import _reset_logging_mixin
 
     _reset_logging_mixin()
     caplog.set_level(logging.INFO)
@@ -3256,7 +3256,7 @@ async def test__async_kucoin_get_candle_history(default_conf, mocker, caplog):
 
     msg = r"_async_get_candle_history\(\) returned exception: .*"
     msg2 = r"Applying DDosProtection backoff delay: .*"
-    with patch("freqtrade.exchange.common.asyncio.sleep", get_mock_coro(None)):
+    with patch("orazen.exchange.common.asyncio.sleep", get_mock_coro(None)):
         for _ in range(3):
             with pytest.raises(DDosProtection, match=r"429 Too Many Requests"):
                 await exchange._async_get_candle_history(
@@ -3687,7 +3687,7 @@ async def test___async_get_candle_history_sort(default_conf, mocker, exchange_na
     ]
     exchange = get_patched_exchange(mocker, default_conf, exchange=exchange_name)
     exchange._api_async.fetch_ohlcv = get_mock_coro(ohlcv)
-    sort_mock = mocker.patch("freqtrade.exchange.exchange.sorted", MagicMock(side_effect=sort_data))
+    sort_mock = mocker.patch("orazen.exchange.exchange.sorted", MagicMock(side_effect=sort_data))
     # Test the OHLCV data sort
     res = await exchange._async_get_candle_history(
         "ETH/BTC", default_conf["timeframe"], CandleType.SPOT
@@ -3725,7 +3725,7 @@ async def test___async_get_candle_history_sort(default_conf, mocker, exchange_na
     ]
     exchange._api_async.fetch_ohlcv = get_mock_coro(ohlcv)
     # Reset sort mock
-    sort_mock = mocker.patch("freqtrade.exchange.sorted", MagicMock(side_effect=sort_data))
+    sort_mock = mocker.patch("orazen.exchange.sorted", MagicMock(side_effect=sort_data))
     # Test the OHLCV data sort
     res = await exchange._async_get_candle_history(
         "ETH/BTC", default_conf["timeframe"], CandleType.SPOT
@@ -4269,7 +4269,7 @@ def test_fetch_order(default_conf, mocker, exchange_name, caplog):
 
     api_mock.fetch_order = MagicMock(side_effect=ccxt.OrderNotFound("Order not found"))
     exchange = get_patched_exchange(mocker, default_conf, api_mock, exchange=exchange_name)
-    with patch("freqtrade.exchange.common.time.sleep") as tm:
+    with patch("orazen.exchange.common.time.sleep") as tm:
         with pytest.raises(InvalidOrderException):
             exchange.fetch_order(order_id="_", pair="TKN/BTC")
         # Ensure backoff is called
@@ -6785,7 +6785,7 @@ def test_get_liquidation_price(
     default_conf_usdt["trading_mode"] = trading_mode
     default_conf_usdt["exchange"]["name"] = exchange_name
     default_conf_usdt["margin_mode"] = margin_mode
-    mocker.patch("freqtrade.exchange.gate.Gate.validate_ordertypes")
+    mocker.patch("orazen.exchange.gate.Gate.validate_ordertypes")
     mocker.patch(f"{EXMS}.price_to_precision", lambda s, x, y, **kwargs: y)
     exchange = get_patched_exchange(mocker, default_conf_usdt, exchange=exchange_name)
 

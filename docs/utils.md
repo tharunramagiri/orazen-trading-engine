@@ -4,7 +4,7 @@ Besides the Live-Trade and Dry-Run run modes, the `backtesting` and `hyperopt` o
 
 ## Create userdir
 
-Creates the directory structure to hold your files for freqtrade.
+Creates the directory structure to hold your files for orazen.
 Will also create strategy and hyperopt examples for you to get started.
 Can be used multiple times - using `--reset` will reset the sample strategy and hyperopt files to their default state.
 
@@ -33,12 +33,12 @@ Creates a new configuration file, asking some questions which are important sele
 --8<-- "commands/new-config.md"
 
 !!! Warning
-    Only vital questions are asked. Freqtrade offers a lot more configuration possibilities, which are listed in the [Configuration documentation](configuration.md#configuration-parameters)
+    Only vital questions are asked. Orazen offers a lot more configuration possibilities, which are listed in the [Configuration documentation](configuration.md#configuration-parameters)
 
 ### Create config examples
 
 ```
-$ freqtrade new-config --config user_data/config_binance.json
+$ orazen new-config --config user_data/config_binance.json
 
 ? Do you want to enable Dry-run (simulated trades)?  Yes
 ? Please insert your stake currency: BTC
@@ -95,19 +95,19 @@ Results will be located in `user_data/strategies/<strategyclassname>.py`.
 ### Sample usage of new-strategy
 
 ```bash
-freqtrade new-strategy --strategy AwesomeStrategy
+orazen new-strategy --strategy AwesomeStrategy
 ```
 
 With custom user directory
 
 ```bash
-freqtrade new-strategy --userdir ~/.freqtrade/ --strategy AwesomeStrategy
+orazen new-strategy --userdir ~/.orazen/ --strategy AwesomeStrategy
 ```
 
 Using the advanced template (populates all optional functions and methods)
 
 ```bash
-freqtrade new-strategy --strategy AwesomeStrategy --template advanced
+orazen new-strategy --strategy AwesomeStrategy --template advanced
 ```
 
 ## List Strategies
@@ -124,19 +124,19 @@ This subcommand is useful for finding problems in your environment with loading 
 Example: Search default strategies directories (within the default userdir).
 
 ``` bash
-freqtrade list-strategies
+orazen list-strategies
 ```
 
 Example: Search strategies  directory within the userdir.
 
 ``` bash
-freqtrade list-strategies --userdir ~/.freqtrade/
+orazen list-strategies --userdir ~/.orazen/
 ```
 
 Example: Search dedicated strategy path.
 
 ``` bash
-freqtrade list-strategies --strategy-path ~/.freqtrade/strategies/
+orazen list-strategies --strategy-path ~/.orazen/strategies/
 ```
 
 ## List Hyperopt-Loss functions
@@ -166,8 +166,8 @@ Use the `list-exchanges` subcommand to see the exchanges available for the bot.
 Example: see exchanges available for the bot:
 
 ```
-$ freqtrade list-exchanges
-Exchanges available for Freqtrade:
+$ orazen list-exchanges
+Exchanges available for Orazen:
 Exchange name       Supported    Markets                 Reason
 ------------------  -----------  ----------------------  ------------------------------------------------------------------------
 binance             Official     spot, isolated futures
@@ -185,10 +185,10 @@ okx                 Official     spot, isolated futures
 !!! Note "missing opt exchanges"
     Values with "missing opt:" might need special configuration (e.g. using orderbook if `fetchTickers` is missing) - but should in theory work (although we cannot guarantee they will).
 
-Example: see all exchanges supported by the ccxt library (including 'bad' ones, i.e. those that are known to not work with Freqtrade)
+Example: see all exchanges supported by the ccxt library (including 'bad' ones, i.e. those that are known to not work with Orazen)
 
 ```
-$ freqtrade list-exchanges -a
+$ orazen list-exchanges -a
 All exchanges supported by the ccxt library:
 Exchange name       Valid    Supported    Markets                 Reason
 ------------------  -------  -----------  ----------------------  ---------------------------------------------------------------------------------
@@ -213,14 +213,14 @@ Use the `list-timeframes` subcommand to see the list of timeframes available for
 * Example: see the timeframes for the 'binance' exchange, set in the configuration file:
 
 ```
-$ freqtrade list-timeframes -c config_binance.json
+$ orazen list-timeframes -c config_binance.json
 ...
 Timeframes available for the exchange `binance`: 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M
 ```
 
-* Example: enumerate exchanges available for Freqtrade and print timeframes supported by each of them:
+* Example: enumerate exchanges available for Orazen and print timeframes supported by each of them:
 ```
-$ for i in `freqtrade list-exchanges -1`; do freqtrade list-timeframes --exchange $i; done
+$ for i in `orazen list-exchanges -1`; do orazen list-timeframes --exchange $i; done
 ```
 
 ## List pairs/list markets
@@ -230,7 +230,7 @@ The `list-pairs` and `list-markets` subcommands allow to see the pairs/markets a
 Pairs are markets with the '/' character between the base currency part and the quote currency part in the market symbol.
 For example, in the 'ETH/BTC' pair 'ETH' is the base currency, while 'BTC' is the quote currency.
 
-For pairs traded by Freqtrade the pair quote currency is defined by the value of the `stake_currency` configuration setting.
+For pairs traded by Orazen the pair quote currency is defined by the value of the `stake_currency` configuration setting.
 
 You can print info about any pair/market with these subcommands - and you can filter output by quote-currency using `--quote BTC`, or by base-currency using `--base ETH` options correspondingly.
 
@@ -250,7 +250,7 @@ Pairs/markets are sorted by its symbol string in the printed output.
 configuration file (i.e. pairs on the "Binance" exchange) in JSON format:
 
 ```
-$ freqtrade list-pairs --quote USD --print-json
+$ orazen list-pairs --quote USD --print-json
 ```
 
 * Print the list of all pairs on the exchange, specified in the `config_binance.json` configuration file
@@ -258,13 +258,13 @@ $ freqtrade list-pairs --quote USD --print-json
 human-readable list with summary:
 
 ```
-$ freqtrade list-pairs -c config_binance.json --all --base BTC ETH --quote USDT USD --print-list
+$ orazen list-pairs -c config_binance.json --all --base BTC ETH --quote USDT USD --print-list
 ```
 
 * Print all markets on exchange "Kraken", in the tabular format:
 
 ```
-$ freqtrade list-markets --exchange kraken --all
+$ orazen list-markets --exchange kraken --all
 ```
 
 ## Test pairlist
@@ -281,19 +281,19 @@ Can be used to generate static pairlists to be used during backtesting / hyperop
 Show whitelist when using a [dynamic pairlist](plugins.md#pairlists).
 
 ```
-freqtrade test-pairlist --config config.json --quote USDT BTC
+orazen test-pairlist --config config.json --quote USDT BTC
 ```
 
 ## Convert database
 
-`freqtrade convert-db` can be used to convert your database from one system to another (sqlite -> postgres, postgres -> other postgres), migrating all trades, orders and Pairlocks.
+`orazen convert-db` can be used to convert your database from one system to another (sqlite -> postgres, postgres -> other postgres), migrating all trades, orders and Pairlocks.
 
 Please refer to the [corresponding documentation](advanced-setup.md#use-a-different-database-system) to learn about requirements for different database systems.
 
 --8<-- "commands/convert-db.md"
 
 !!! Warning
-    Please ensure to only use this on an empty target database. Freqtrade will perform a regular migration, but may fail if entries already existed.
+    Please ensure to only use this on an empty target database. Orazen will perform a regular migration, but may fail if entries already existed.
 
 ## Webserver mode
 
@@ -301,8 +301,8 @@ Please refer to the [corresponding documentation](advanced-setup.md#use-a-differ
     Webserver mode is an experimental mode to increase backesting and strategy development productivity.
     There may still be bugs - so if you happen to stumble across these, please report them as github issues, thanks.
 
-Run freqtrade in webserver mode.
-Freqtrade will start the webserver and allow FreqUI to start and control backtesting processes.
+Run orazen in webserver mode.
+Orazen will start the webserver and allow FreqUI to start and control backtesting processes.
 This has the advantage that data will not be reloaded between backtesting runs (as long as timeframe and timerange remain identical).
 FreqUI will also show the backtesting results.
 
@@ -312,14 +312,14 @@ FreqUI will also show the backtesting results.
 
 You can also use webserver mode via docker.
 Starting a one-off container requires the configuration of the port explicitly, as ports are not exposed by default.
-You can use `docker compose run --rm -p 127.0.0.1:8080:8080 freqtrade webserver` to start a one-off container that'll be removed once you stop it. This assumes that port 8080 is still available and no other bot is running on that port.
+You can use `docker compose run --rm -p 127.0.0.1:8080:8080 orazen webserver` to start a one-off container that'll be removed once you stop it. This assumes that port 8080 is still available and no other bot is running on that port.
 
 Alternatively, you can reconfigure the docker-compose file to have the command updated:
 
 ``` yml
     command: >
       webserver
-      --config /freqtrade/user_data/config.json
+      --config /orazen/user_data/config.json
 ```
 
 You can now use `docker compose up` to start the webserver.
@@ -360,12 +360,12 @@ You can list the hyperoptimization epochs the Hyperopt module evaluated previous
 
 List all results, print details of the best result at the end:
 ```
-freqtrade hyperopt-list
+orazen hyperopt-list
 ```
 
 List only epochs with positive profit. Do not print the details of the best epoch, so that the list can be iterated in a script:
 ```
-freqtrade hyperopt-list --profitable --no-details
+orazen hyperopt-list --profitable --no-details
 ```
 
 ## Show details of Hyperopt results
@@ -383,13 +383,13 @@ You can show the details of any hyperoptimization epoch previously evaluated by 
 Print details for the epoch 168 (the number of the epoch is shown by the `hyperopt-list` subcommand or by Hyperopt itself during hyperoptimization run):
 
 ```
-freqtrade hyperopt-show -n 168
+orazen hyperopt-show -n 168
 ```
 
 Prints JSON data with details for the last best epoch (i.e., the best of all epochs):
 
 ```
-freqtrade hyperopt-show --best -n -1 --print-json --no-header
+orazen hyperopt-show --best -n -1 --print-json --no-header
 ```
 
 ## Show trades
@@ -403,7 +403,7 @@ Print selected (or all) trades from database to screen.
 Print trades with id 2 and 3 as json
 
 ``` bash
-freqtrade show-trades --db-url sqlite:///tradesv3.sqlite --trade-ids 2 3 --print-json
+orazen show-trades --db-url sqlite:///tradesv3.sqlite --trade-ids 2 3 --print-json
 ```
 
 ## Strategy-Updater

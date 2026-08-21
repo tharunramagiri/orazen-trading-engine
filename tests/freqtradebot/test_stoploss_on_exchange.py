@@ -5,15 +5,15 @@ from unittest.mock import ANY, MagicMock
 import pytest
 from sqlalchemy import select
 
-from freqtrade.enums import ExitCheckTuple, ExitType, RPCMessageType
-from freqtrade.exceptions import ExchangeError, InsufficientFundsError, InvalidOrderException
-from freqtrade.freqtradebot import FreqtradeBot
-from freqtrade.persistence import Order, Trade
-from freqtrade.persistence.models import PairLock
-from freqtrade.util.datetime_helpers import dt_now
+from orazen.enums import ExitCheckTuple, ExitType, RPCMessageType
+from orazen.exceptions import ExchangeError, InsufficientFundsError, InvalidOrderException
+from orazen.orazenbot import OrazenBot
+from orazen.persistence import Order, Trade
+from orazen.persistence.models import PairLock
+from orazen.util.datetime_helpers import dt_now
 from tests.conftest import (
     EXMS,
-    get_patched_freqtradebot,
+    get_patched_orazenbot,
     log_has,
     log_has_re,
     patch_exchange,
@@ -21,7 +21,7 @@ from tests.conftest import (
     patch_whitelist,
 )
 from tests.conftest_trades import entry_side, exit_side
-from tests.freqtradebot.test_freqtradebot import patch_RPCManager
+from tests.orazenbot.test_orazenbot import patch_RPCManager
 
 
 @pytest.mark.parametrize("is_short", [False, True])
@@ -35,25 +35,25 @@ def test_add_stoploss_on_exchange(mocker, default_conf_usdt, limit_order, is_sho
         get_fee=fee,
     )
     order = limit_order[entry_side(is_short)]
-    mocker.patch("freqtrade.freqtradebot.FreqtradeBot.handle_trade", MagicMock(return_value=True))
+    mocker.patch("orazen.orazenbot.OrazenBot.handle_trade", MagicMock(return_value=True))
     mocker.patch(f"{EXMS}.fetch_order", return_value=order)
     mocker.patch(f"{EXMS}.get_trades_for_order", return_value=[])
 
     stoploss = MagicMock(return_value={"id": 13434334})
     mocker.patch(f"{EXMS}.create_stoploss", stoploss)
 
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    orazen = OrazenBot(default_conf_usdt)
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
 
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     trade.is_open = True
     trades = [trade]
 
-    freqtrade.exit_positions(trades)
+    orazen.exit_positions(trades)
     assert trade.has_open_sl_orders is True
     assert stoploss.call_count == 1
     assert trade.is_open is True
@@ -81,20 +81,20 @@ def test_handle_stoploss_on_exchange(
         get_fee=fee,
         create_stoploss=stoploss,
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    orazen = OrazenBot(default_conf_usdt)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
     # First case: when stoploss is not yet set but the order is open
     # should get the stoploss order id immediately
     # and should return false as no trade actually happened
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     assert trade.is_short == is_short
     assert trade.is_open
     assert trade.has_open_sl_orders is False
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert stoploss.call_count == 1
     assert trade.open_sl_orders[-1].order_id == "13434334"
 
@@ -103,9 +103,9 @@ def test_handle_stoploss_on_exchange(
     trade.is_open = True
 
     hanging_stoploss_order = MagicMock(return_value={"id": "13434334", "status": "open"})
-    mocker.patch.object(freqtrade.exchange, "fetch_stoploss_order", hanging_stoploss_order)
+    mocker.patch.object(orazen.exchange, "fetch_stoploss_order", hanging_stoploss_order)
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     hanging_stoploss_order.assert_called_once_with("13434334", trade.pair)
     assert len(trade.open_sl_orders) == 1
     assert trade.open_sl_orders[-1].order_id == "13434334"
@@ -116,13 +116,13 @@ def test_handle_stoploss_on_exchange(
     trade.is_open = True
 
     canceled_stoploss_order = MagicMock(return_value={"id": "13434334", "status": "canceled"})
-    mocker.patch.object(freqtrade.exchange, "fetch_stoploss_order", canceled_stoploss_order)
+    mocker.patch.object(orazen.exchange, "fetch_stoploss_order", canceled_stoploss_order)
     stoploss.reset_mock()
     amount_before = trade.amount
 
     stop_order_dict.update({"id": "103_1"})
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert stoploss.call_count == 1
     assert len(trade.open_sl_orders) == 1
     assert trade.open_sl_orders[-1].order_id == "103_1"
@@ -149,18 +149,18 @@ def test_handle_stoploss_on_exchange(
             "amount": enter_order["amount"],
         }
     )
-    mocker.patch.object(freqtrade.exchange, "fetch_stoploss_order", stoploss_order_hit)
-    freqtrade.strategy.order_filled = MagicMock(return_value=None)
-    assert freqtrade.handle_stoploss_on_exchange(trade) is True
+    mocker.patch.object(orazen.exchange, "fetch_stoploss_order", stoploss_order_hit)
+    orazen.strategy.order_filled = MagicMock(return_value=None)
+    assert orazen.handle_stoploss_on_exchange(trade) is True
     assert log_has_re(r"STOP_LOSS_LIMIT is hit for Trade\(id=1, .*\)\.", caplog)
     assert len(trade.open_sl_orders) == 0
     assert trade.is_open is False
-    assert freqtrade.strategy.order_filled.call_count == 1
+    assert orazen.strategy.order_filled.call_count == 1
     caplog.clear()
 
-    mocker.patch.object(freqtrade.exchange, "create_stoploss", side_effect=ExchangeError())
+    mocker.patch.object(orazen.exchange, "create_stoploss", side_effect=ExchangeError())
     trade.is_open = True
-    freqtrade.handle_stoploss_on_exchange(trade)
+    orazen.handle_stoploss_on_exchange(trade)
     assert log_has("Unable to place a stoploss order on exchange.", caplog)
     assert len(trade.open_sl_orders) == 0
 
@@ -169,13 +169,13 @@ def test_handle_stoploss_on_exchange(
     stop_order_dict.update({"id": "105"})
     stoploss.reset_mock()
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         fetch_stoploss_order=MagicMock(
             side_effect=InvalidOrderException(),
         ),
         create_stoploss=stoploss,
     )
-    freqtrade.handle_stoploss_on_exchange(trade)
+    orazen.handle_stoploss_on_exchange(trade)
     assert len(trade.open_sl_orders) == 1
     assert stoploss.call_count == 1
 
@@ -184,8 +184,8 @@ def test_handle_stoploss_on_exchange(
     trade.is_open = False
     trade.open_sl_orders[-1].ft_is_open = False
     stoploss.reset_mock()
-    mocker.patch.multiple(freqtrade.exchange, fetch_order=MagicMock(), create_stoploss=stoploss)
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    mocker.patch.multiple(orazen.exchange, fetch_order=MagicMock(), create_stoploss=stoploss)
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert trade.has_open_sl_orders is False
     assert stoploss.call_count == 0
 
@@ -212,10 +212,10 @@ def test_handle_stoploss_on_exchange_emergency(
         get_fee=fee,
         create_stoploss=stoploss,
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    orazen = OrazenBot(default_conf_usdt)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     assert trade.is_short == is_short
     assert trade.is_open
@@ -252,17 +252,17 @@ def test_handle_stoploss_on_exchange_emergency(
             status="open",
         )
     )
-    freqtrade.config["trailing_stop"] = True
+    orazen.config["trailing_stop"] = True
     stoploss = MagicMock(side_effect=InvalidOrderException())
     assert trade.has_open_sl_orders is True
     Trade.commit()
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         cancel_stoploss_order_with_result=MagicMock(side_effect=InvalidOrderException()),
         fetch_stoploss_order=stoploss_order_cancelled,
         create_stoploss=stoploss,
     )
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert trade.has_open_sl_orders is False
     assert trade.is_open is False
     assert trade.exit_reason == str(ExitType.EMERGENCY_EXIT)
@@ -290,15 +290,15 @@ def test_handle_stoploss_on_exchange_partial(
         get_fee=fee,
         create_stoploss=stoploss,
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    orazen = OrazenBot(default_conf_usdt)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     trade.is_open = True
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert stoploss.call_count == 1
     assert trade.has_open_sl_orders is True
     assert trade.open_sl_orders[-1].order_id == "101"
@@ -318,8 +318,8 @@ def test_handle_stoploss_on_exchange_partial(
             "amount": enter_order["amount"],
         }
     )
-    mocker.patch.multiple(freqtrade.exchange, fetch_stoploss_order=stoploss_order_hit)
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    mocker.patch.multiple(orazen.exchange, fetch_stoploss_order=stoploss_order_hit)
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     # Stoploss filled partially ...
     assert trade.amount == 15
 
@@ -350,22 +350,22 @@ def test_handle_stoploss_on_exchange_partial_cancel_here(
         get_fee=fee,
         create_stoploss=stoploss,
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    orazen = OrazenBot(default_conf_usdt)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     trade.is_open = True
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert stoploss.call_count == 1
     assert trade.has_open_sl_orders is True
     assert trade.open_sl_orders[-1].order_id == "101"
     assert trade.amount == 30
     stop_order_dict.update({"id": "102"})
     # Stoploss on exchange is open.
-    # Freqtrade cancels the stop - but cancel returns a partial filled order.
+    # Orazen cancels the stop - but cancel returns a partial filled order.
     stoploss_order_hit = MagicMock(
         return_value={
             "id": "101",
@@ -391,13 +391,13 @@ def test_handle_stoploss_on_exchange_partial_cancel_here(
         }
     )
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         fetch_stoploss_order=stoploss_order_hit,
         cancel_stoploss_order_with_result=stoploss_order_cancel,
     )
     time_machine.shift(timedelta(minutes=15))
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     # Canceled Stoploss filled partially ...
     assert log_has_re("Cancelling current stoploss on exchange.*", caplog)
 
@@ -420,9 +420,9 @@ def test_handle_sle_cancel_cant_recreate(
         fetch_ticker=MagicMock(return_value={"bid": 1.9, "ask": 2.2, "last": 1.9}),
         get_fee=fee,
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
+    orazen = OrazenBot(default_conf_usdt)
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         create_order=MagicMock(
             side_effect=[
                 enter_order,
@@ -432,9 +432,9 @@ def test_handle_sle_cancel_cant_recreate(
         fetch_stoploss_order=MagicMock(return_value={"status": "canceled", "id": "100"}),
         create_stoploss=MagicMock(side_effect=ExchangeError()),
     )
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     assert trade.is_short == is_short
     trade.is_open = True
@@ -451,7 +451,7 @@ def test_handle_sle_cancel_cant_recreate(
     )
     assert trade
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert log_has_re(r"All Stoploss orders are cancelled, but unable to recreate one\.", caplog)
     assert trade.has_open_sl_orders is False
     assert trade.is_open is True
@@ -482,16 +482,16 @@ def test_create_stoploss_order_invalid_order(
         fetch_order=MagicMock(return_value={"status": "canceled"}),
         create_stoploss=MagicMock(side_effect=InvalidOrderException()),
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    orazen = OrazenBot(default_conf_usdt)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     caplog.clear()
     rpc_mock.reset_mock()
-    freqtrade.create_stoploss_order(trade, 200)
+    orazen.create_stoploss_order(trade, 200)
     assert trade.has_open_sl_orders is False
     assert trade.exit_reason == ExitType.EMERGENCY_EXIT.value
     assert log_has("Unable to place a stoploss order on exchange. ", caplog)
@@ -516,9 +516,9 @@ def test_create_stoploss_order_insufficient_funds(
     mocker, default_conf_usdt, caplog, fee, limit_order, is_short
 ):
     exit_order = limit_order[exit_side(is_short)]["id"]
-    freqtrade = get_patched_freqtradebot(mocker, default_conf_usdt)
+    orazen = get_patched_orazenbot(mocker, default_conf_usdt)
 
-    mock_insuf = mocker.patch("freqtrade.freqtradebot.FreqtradeBot.handle_insufficient_funds")
+    mock_insuf = mocker.patch("orazen.orazenbot.OrazenBot.handle_insufficient_funds")
     mocker.patch.multiple(
         EXMS,
         fetch_ticker=MagicMock(return_value={"bid": 1.9, "ask": 2.2, "last": 1.9}),
@@ -535,20 +535,20 @@ def test_create_stoploss_order_insufficient_funds(
         EXMS,
         create_stoploss=MagicMock(side_effect=InsufficientFundsError()),
     )
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     caplog.clear()
-    freqtrade.create_stoploss_order(trade, 200)
+    orazen.create_stoploss_order(trade, 200)
     # stoploss_orderid was empty before
     assert trade.has_open_sl_orders is False
     assert mock_insuf.call_count == 1
     mock_insuf.reset_mock()
 
-    freqtrade.create_stoploss_order(trade, 200)
+    orazen.create_stoploss_order(trade, 200)
     # No change to stoploss-orderid
     assert trade.has_open_sl_orders is False
     assert mock_insuf.call_count == 1
@@ -610,20 +610,20 @@ def test_handle_stoploss_on_exchange_trailing(
     # disabling ROI
     default_conf_usdt["minimal_roi"]["0"] = 999999999
 
-    freqtrade = get_patched_freqtradebot(mocker, default_conf_usdt)
+    orazen = get_patched_orazenbot(mocker, default_conf_usdt)
 
     # enabling stoploss on exchange
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
 
     # setting stoploss
-    freqtrade.strategy.stoploss = 0.05 if is_short else -0.05
+    orazen.strategy.stoploss = 0.05 if is_short else -0.05
 
     # setting stoploss_on_exchange_interval to 60 seconds
-    freqtrade.strategy.order_types["stoploss_on_exchange_interval"] = 60
+    orazen.strategy.order_types["stoploss_on_exchange_interval"] = 60
 
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     trade.is_open = True
@@ -655,14 +655,14 @@ def test_handle_stoploss_on_exchange_trailing(
     stoploss_order_cancel["status"] = "canceled"
 
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         fetch_stoploss_order=MagicMock(return_value=stoploss_order_hanging),
         cancel_stoploss_order=MagicMock(return_value=stoploss_order_cancel),
     )
 
     # stoploss initially at 5%
-    assert freqtrade.handle_trade(trade) is False
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_trade(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
 
     assert len(trade.open_sl_orders) == 1
 
@@ -685,15 +685,15 @@ def test_handle_stoploss_on_exchange_trailing(
     )
     stoploss_order_mock = MagicMock(return_value={"id": "so1", "status": "open"})
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         fetch_stoploss_order=MagicMock(),
         cancel_stoploss_order=cancel_order_mock,
         create_stoploss=stoploss_order_mock,
     )
 
     # stoploss should not be updated as the interval is 60 seconds
-    assert freqtrade.handle_trade(trade) is False
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_trade(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     assert len(trade.open_sl_orders) == 1
     cancel_order_mock.assert_not_called()
     stoploss_order_mock.assert_not_called()
@@ -701,16 +701,16 @@ def test_handle_stoploss_on_exchange_trailing(
     # Move time by 10s ... so stoploss order should be replaced.
     time_machine.move_to(start_dt + timedelta(minutes=10), tick=False)
 
-    assert freqtrade.handle_trade(trade) is False
+    assert orazen.handle_trade(trade) is False
     assert trade.stop_loss == stop_price[1]
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
 
     cancel_order_mock.assert_called_once_with("13434334", "ETH/USDT")
     stoploss_order_mock.assert_called_once_with(
         amount=30,
         pair="ETH/USDT",
-        order_types=freqtrade.strategy.order_types,
+        order_types=orazen.strategy.order_types,
         stop_price=stop_price[1],
         side=exit_side(is_short),
         leverage=1.0,
@@ -728,14 +728,14 @@ def test_handle_stoploss_on_exchange_trailing(
         ),
     )
     mocker.patch.object(
-        freqtrade.exchange,
+        orazen.exchange,
         "cancel_stoploss_order_with_result",
         return_value={"id": "so1", "status": "canceled"},
     )
     assert len(trade.open_sl_orders) == 1
     assert trade.open_sl_orders[-1].order_id == "so1"
 
-    assert freqtrade.handle_trade(trade) is True
+    assert orazen.handle_trade(trade) is True
     assert trade.is_open is False
     assert trade.has_open_sl_orders is False
 
@@ -768,17 +768,17 @@ def test_handle_stoploss_on_exchange_trailing_error(
     # enabling TSL
     default_conf_usdt["trailing_stop"] = True
 
-    freqtrade = get_patched_freqtradebot(mocker, default_conf_usdt)
+    orazen = get_patched_orazenbot(mocker, default_conf_usdt)
     # enabling stoploss on exchange
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
 
     # setting stoploss
-    freqtrade.strategy.stoploss = 0.05 if is_short else -0.05
+    orazen.strategy.stoploss = 0.05 if is_short else -0.05
 
     # setting stoploss_on_exchange_interval to 60 seconds
-    freqtrade.strategy.order_types["stoploss_on_exchange_interval"] = 60
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
-    freqtrade.enter_positions(1)
+    orazen.strategy.order_types["stoploss_on_exchange_interval"] = 60
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     trade.is_open = True
@@ -804,13 +804,13 @@ def test_handle_stoploss_on_exchange_trailing_error(
         )
     )
     mocker.patch.object(
-        freqtrade.exchange, "cancel_stoploss_order", side_effect=InvalidOrderException()
+        orazen.exchange, "cancel_stoploss_order", side_effect=InvalidOrderException()
     )
     mocker.patch.object(
-        freqtrade.exchange, "fetch_stoploss_order", return_value=stoploss_order_hanging
+        orazen.exchange, "fetch_stoploss_order", return_value=stoploss_order_hanging
     )
     time_machine.shift(timedelta(minutes=50))
-    freqtrade.handle_trailing_stoploss_on_exchange(trade, stoploss_order_hanging)
+    orazen.handle_trailing_stoploss_on_exchange(trade, stoploss_order_hanging)
     assert log_has_re(r"Could not cancel stoploss order abcd for pair ETH/USDT.*", caplog)
 
     # Still try to create order
@@ -820,10 +820,10 @@ def test_handle_stoploss_on_exchange_trailing_error(
 
     # Fail creating stoploss order
     caplog.clear()
-    cancel_mock = mocker.patch.object(freqtrade.exchange, "cancel_stoploss_order")
-    mocker.patch.object(freqtrade.exchange, "create_stoploss", side_effect=ExchangeError())
+    cancel_mock = mocker.patch.object(orazen.exchange, "cancel_stoploss_order")
+    mocker.patch.object(orazen.exchange, "create_stoploss", side_effect=ExchangeError())
     time_machine.shift(timedelta(minutes=50))
-    freqtrade.handle_trailing_stoploss_on_exchange(trade, stoploss_order_hanging)
+    orazen.handle_trailing_stoploss_on_exchange(trade, stoploss_order_hanging)
     assert cancel_mock.call_count == 2
     assert log_has_re(r"Could not create trailing stoploss order for pair ETH/USDT\..*", caplog)
 
@@ -845,10 +845,10 @@ def test_stoploss_on_exchange_price_rounding(
         stoploss_adjust=adjust_mock,
         price_to_precision=price_mock,
     )
-    freqtrade = get_patched_freqtradebot(mocker, default_conf_usdt)
+    orazen = get_patched_orazenbot(mocker, default_conf_usdt)
     open_trade_usdt.stop_loss = 222.55
 
-    freqtrade.handle_trailing_stoploss_on_exchange(open_trade_usdt, {})
+    orazen.handle_trailing_stoploss_on_exchange(open_trade_usdt, {})
     assert price_mock.call_count == 1
     assert adjust_mock.call_count == 1
     assert adjust_mock.call_args_list[0][0][0] == 222
@@ -877,9 +877,9 @@ def test_handle_stoploss_on_exchange_custom_stop(
     # disabling ROI
     default_conf_usdt["minimal_roi"]["0"] = 999999999
 
-    freqtrade = get_patched_freqtradebot(mocker, default_conf_usdt)
+    orazen = get_patched_orazenbot(mocker, default_conf_usdt)
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         create_order=MagicMock(
             side_effect=[
                 enter_order,
@@ -891,17 +891,17 @@ def test_handle_stoploss_on_exchange_custom_stop(
     )
 
     # enabling stoploss on exchange
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
 
     # setting stoploss
-    freqtrade.strategy.custom_stoploss = lambda *args, **kwargs: -0.04
+    orazen.strategy.custom_stoploss = lambda *args, **kwargs: -0.04
 
     # setting stoploss_on_exchange_interval to 60 seconds
-    freqtrade.strategy.order_types["stoploss_on_exchange_interval"] = 60
+    orazen.strategy.order_types["stoploss_on_exchange_interval"] = 60
 
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     trade.is_open = True
@@ -934,13 +934,13 @@ def test_handle_stoploss_on_exchange_custom_stop(
         return x
 
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         fetch_stoploss_order=MagicMock(fetch_stoploss_order_mock),
         cancel_stoploss_order=MagicMock(return_value=slo_canceled),
     )
 
-    assert freqtrade.handle_trade(trade) is False
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_trade(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
 
     # price jumped 2x
     mocker.patch(
@@ -957,34 +957,34 @@ def test_handle_stoploss_on_exchange_custom_stop(
     cancel_order_mock = MagicMock()
     stoploss_order_mock = MagicMock(return_value={"id": "so1", "status": "open"})
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         cancel_stoploss_order=cancel_order_mock,
         create_stoploss=stoploss_order_mock,
     )
 
     # stoploss should not be updated as the interval is 60 seconds
-    assert freqtrade.handle_trade(trade) is False
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_trade(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
     cancel_order_mock.assert_not_called()
     stoploss_order_mock.assert_not_called()
 
-    assert freqtrade.handle_trade(trade) is False
+    assert orazen.handle_trade(trade) is False
     assert trade.stop_loss == 4.4 * 0.96 if not is_short else 1.1
     assert trade.stop_loss_pct == -0.04 if not is_short else 0.04
 
     # setting stoploss_on_exchange_interval to 0 seconds
-    freqtrade.strategy.order_types["stoploss_on_exchange_interval"] = 0
+    orazen.strategy.order_types["stoploss_on_exchange_interval"] = 0
     cancel_order_mock.assert_not_called()
     stoploss_order_mock.assert_not_called()
 
-    assert freqtrade.handle_stoploss_on_exchange(trade) is False
+    assert orazen.handle_stoploss_on_exchange(trade) is False
 
     cancel_order_mock.assert_called_once_with("13434334", "ETH/USDT")
     # Long uses modified ask - offset, short modified bid + offset
     stoploss_order_mock.assert_called_once_with(
         amount=pytest.approx(trade.amount),
         pair="ETH/USDT",
-        order_types=freqtrade.strategy.order_types,
+        order_types=orazen.strategy.order_types,
         stop_price=4.4 * 0.96 if not is_short else 0.95 * 1.04,
         side=exit_side(is_short),
         leverage=1.0,
@@ -994,7 +994,7 @@ def test_handle_stoploss_on_exchange_custom_stop(
     mocker.patch(
         f"{EXMS}.fetch_ticker", MagicMock(return_value={"bid": 4.17, "ask": 4.19, "last": 4.17})
     )
-    assert freqtrade.handle_trade(trade) is True
+    assert orazen.handle_trade(trade) is True
 
 
 @pytest.mark.parametrize("is_short", [False, True])
@@ -1016,11 +1016,11 @@ def test_execute_trade_exit_down_stoploss_on_exchange_dry_run(
         _dry_is_price_crossed=MagicMock(side_effect=[True, False]),
     )
     patch_whitelist(mocker, default_conf_usdt)
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    orazen = OrazenBot(default_conf_usdt)
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
     # Create some test data
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
 
     trade = Trade.session.scalars(select(Trade)).first()
     assert trade.is_short == is_short
@@ -1032,11 +1032,11 @@ def test_execute_trade_exit_down_stoploss_on_exchange_dry_run(
     )
 
     default_conf_usdt["dry_run"] = True
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
     # Setting trade stoploss to 0.01
 
     trade.stop_loss = 2.0 * 1.01 if is_short else 2.0 * 0.99
-    freqtrade.execute_trade_exit(
+    orazen.execute_trade_exit(
         trade=trade, limit=trade.stop_loss, exit_check=ExitCheckTuple(exit_type=ExitType.STOP_LOSS)
     )
 
@@ -1080,11 +1080,11 @@ def test_execute_trade_exit_down_stoploss_on_exchange_dry_run(
 def test_execute_trade_exit_sloe_cancel_exception(
     mocker, default_conf_usdt, ticker_usdt, fee, caplog
 ) -> None:
-    freqtrade = get_patched_freqtradebot(mocker, default_conf_usdt)
+    orazen = get_patched_orazenbot(mocker, default_conf_usdt)
     mocker.patch.object(
-        freqtrade.exchange, "cancel_stoploss_order", side_effect=InvalidOrderException()
+        orazen.exchange, "cancel_stoploss_order", side_effect=InvalidOrderException()
     )
-    mocker.patch("freqtrade.wallets.Wallets.get_free", MagicMock(return_value=300))
+    mocker.patch("orazen.wallets.Wallets.get_free", MagicMock(return_value=300))
     create_order_mock = MagicMock(
         side_effect=[
             {"id": "12345554"},
@@ -1102,14 +1102,14 @@ def test_execute_trade_exit_sloe_cancel_exception(
         ),
     )
 
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
-    patch_get_signal(freqtrade)
-    freqtrade.enter_positions(1)
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
+    patch_get_signal(orazen)
+    orazen.enter_positions(1)
 
     trade = Trade.session.scalars(select(Trade)).first()
     PairLock.session = MagicMock()
 
-    freqtrade.config["dry_run"] = False
+    orazen.config["dry_run"] = False
     trade.orders.append(
         Order(
             ft_order_side="stoploss",
@@ -1122,7 +1122,7 @@ def test_execute_trade_exit_sloe_cancel_exception(
         )
     )
 
-    freqtrade.execute_trade_exit(
+    orazen.execute_trade_exit(
         trade=trade, limit=1234, exit_check=ExitCheckTuple(exit_type=ExitType.STOP_LOSS)
     )
     assert create_order_mock.call_count == 2
@@ -1137,7 +1137,7 @@ def test_execute_trade_exit_with_stoploss_on_exchange(
     rpc_mock = patch_RPCManager(mocker)
     patch_exchange(mocker)
     stoploss = MagicMock(return_value={"id": 123, "status": "open", "info": {"foo": "bar"}})
-    mocker.patch("freqtrade.freqtradebot.FreqtradeBot.handle_order_fee")
+    mocker.patch("orazen.orazenbot.OrazenBot.handle_order_fee")
 
     cancel_order = MagicMock(return_value=True)
     mocker.patch.multiple(
@@ -1147,32 +1147,32 @@ def test_execute_trade_exit_with_stoploss_on_exchange(
         amount_to_precision=lambda s, x, y: y,
         price_to_precision=lambda s, x, y: y,
     )
-    freqtrade = FreqtradeBot(default_conf_usdt)
+    orazen = OrazenBot(default_conf_usdt)
     mocker.patch.multiple(
-        freqtrade.exchange,
+        orazen.exchange,
         create_stoploss=stoploss,
         cancel_stoploss_order=cancel_order,
         _dry_is_price_crossed=MagicMock(side_effect=[True, False]),
     )
 
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
-    patch_get_signal(freqtrade, enter_short=is_short, enter_long=not is_short)
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
+    patch_get_signal(orazen, enter_short=is_short, enter_long=not is_short)
 
     # Create some test data
-    freqtrade.enter_positions(1)
+    orazen.enter_positions(1)
 
     trade = Trade.session.scalars(select(Trade)).first()
     trade.is_short = is_short
     assert trade
     trades = [trade]
 
-    freqtrade.manage_open_orders()
-    freqtrade.exit_positions(trades)
+    orazen.manage_open_orders()
+    orazen.exit_positions(trades)
 
     # Increase the price and sell it
     mocker.patch.multiple(EXMS, fetch_ticker=ticker_usdt_sell_up)
 
-    freqtrade.execute_trade_exit(
+    orazen.execute_trade_exit(
         trade=trade,
         limit=ticker_usdt_sell_up()["ask" if is_short else "bid"],
         exit_check=ExitCheckTuple(exit_type=ExitType.STOP_LOSS),
@@ -1205,18 +1205,18 @@ def test_may_execute_trade_exit_after_stoploss_on_exchange_hit(
 
     mocker.patch(f"{EXMS}.create_stoploss", stoploss)
 
-    freqtrade = FreqtradeBot(default_conf_usdt)
-    freqtrade.strategy.order_types["stoploss_on_exchange"] = True
-    patch_get_signal(freqtrade, enter_long=not is_short, enter_short=is_short)
+    orazen = OrazenBot(default_conf_usdt)
+    orazen.strategy.order_types["stoploss_on_exchange"] = True
+    patch_get_signal(orazen, enter_long=not is_short, enter_short=is_short)
 
     # Create some test data
-    freqtrade.enter_positions(1)
-    freqtrade.manage_open_orders()
+    orazen.enter_positions(1)
+    orazen.manage_open_orders()
     trade = Trade.session.scalars(select(Trade)).first()
     trades = [trade]
     assert trade.has_open_sl_orders is False
 
-    freqtrade.exit_positions(trades)
+    orazen.exit_positions(trades)
     assert trade
     assert trade.has_open_sl_orders is True
     assert not trade.has_open_orders
@@ -1243,9 +1243,9 @@ def test_may_execute_trade_exit_after_stoploss_on_exchange_hit(
             "trades": None,
         }
     )
-    mocker.patch.object(freqtrade.exchange, "fetch_stoploss_order", stoploss_executed)
+    mocker.patch.object(orazen.exchange, "fetch_stoploss_order", stoploss_executed)
 
-    freqtrade.exit_positions(trades)
+    orazen.exit_positions(trades)
     assert trade.has_open_sl_orders is False
     assert trade.is_open is False
     assert trade.exit_reason == ExitType.STOPLOSS_ON_EXCHANGE.value

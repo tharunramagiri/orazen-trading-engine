@@ -4,14 +4,14 @@ import sys
 
 import pytest
 
-from freqtrade.exceptions import OperationalException
-from freqtrade.loggers import (
+from orazen.exceptions import OperationalException
+from orazen.loggers import (
     FTBufferingHandler,
     FtRichHandler,
     setup_logging,
     setup_logging_pre,
 )
-from freqtrade.loggers.set_log_levels import (
+from orazen.loggers.set_log_levels import (
     reduce_verbosity_for_bias_tester,
     restore_verbosity_for_bias_tester,
 )
@@ -193,7 +193,7 @@ def test_set_loggers_json_format(capsys):
             "version": 1,
             "formatters": {
                 "json": {
-                    "()": "freqtrade.loggers.json_formatter.JsonFormatter",
+                    "()": "orazen.loggers.json_formatter.JsonFormatter",
                     "fmt_dict": {
                         "timestamp": "asctime",
                         "level": "levelname",
@@ -233,16 +233,16 @@ def test_set_loggers_json_format(capsys):
 def test_reduce_verbosity():
     setup_logging_pre()
     reduce_verbosity_for_bias_tester()
-    prior_level = logging.getLogger("freqtrade").getEffectiveLevel()
+    prior_level = logging.getLogger("orazen").getEffectiveLevel()
 
-    assert logging.getLogger("freqtrade.resolvers").getEffectiveLevel() == logging.WARNING
-    assert logging.getLogger("freqtrade.strategy.hyper").getEffectiveLevel() == logging.WARNING
+    assert logging.getLogger("orazen.resolvers").getEffectiveLevel() == logging.WARNING
+    assert logging.getLogger("orazen.strategy.hyper").getEffectiveLevel() == logging.WARNING
     # base level wasn't changed
-    assert logging.getLogger("freqtrade").getEffectiveLevel() == prior_level
+    assert logging.getLogger("orazen").getEffectiveLevel() == prior_level
 
     restore_verbosity_for_bias_tester()
 
-    assert logging.getLogger("freqtrade.resolvers").getEffectiveLevel() == prior_level
-    assert logging.getLogger("freqtrade.strategy.hyper").getEffectiveLevel() == prior_level
-    assert logging.getLogger("freqtrade").getEffectiveLevel() == prior_level
+    assert logging.getLogger("orazen.resolvers").getEffectiveLevel() == prior_level
+    assert logging.getLogger("orazen.strategy.hyper").getEffectiveLevel() == prior_level
+    assert logging.getLogger("orazen").getEffectiveLevel() == prior_level
     # base level wasn't changed

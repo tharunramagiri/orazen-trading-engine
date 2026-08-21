@@ -4,10 +4,10 @@ from unittest.mock import MagicMock, PropertyMock
 
 import pytest
 
-from freqtrade.enums import CandleType, MarginMode, RunMode, TradingMode
-from freqtrade.exceptions import InvalidOrderException, OperationalException, RetryableOrderError
-from freqtrade.exchange.common import API_RETRY_COUNT
-from freqtrade.util import dt_now, dt_ts, dt_utc
+from orazen.enums import CandleType, MarginMode, RunMode, TradingMode
+from orazen.exceptions import InvalidOrderException, OperationalException, RetryableOrderError
+from orazen.exchange.common import API_RETRY_COUNT
+from orazen.util import dt_now, dt_ts, dt_utc
 from tests.conftest import EXMS, get_patched_exchange
 from tests.exchange.test_exchange import ccxt_exceptionhandlers
 
@@ -15,7 +15,7 @@ from tests.exchange.test_exchange import ccxt_exceptionhandlers
 @pytest.mark.usefixtures("init_persistence")
 def test_fetch_stoploss_order_bitget(default_conf, mocker):
     default_conf["dry_run"] = False
-    mocker.patch("freqtrade.exchange.common.time.sleep")
+    mocker.patch("orazen.exchange.common.time.sleep")
     api_mock = MagicMock()
 
     exchange = get_patched_exchange(mocker, default_conf, api_mock, exchange="bitget")
@@ -182,7 +182,7 @@ def test_dry_run_liquidation_price_cross_bitget(default_conf, mocker):
     exchange = get_patched_exchange(mocker, default_conf, exchange="bitget", api_mock=api_mock)
 
     with pytest.raises(
-        OperationalException, match="Freqtrade currently only supports isolated futures for bitget"
+        OperationalException, match="Orazen currently only supports isolated futures for bitget"
     ):
         exchange.dry_run_liquidation_price(
             "ETH/USDT:USDT",

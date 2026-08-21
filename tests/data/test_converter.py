@@ -7,8 +7,8 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from freqtrade.configuration.timerange import TimeRange
-from freqtrade.data.converter import (
+from orazen.configuration.timerange import TimeRange
+from orazen.data.converter import (
     convert_ohlcv_format,
     convert_trades_format,
     convert_trades_to_ohlcv,
@@ -21,15 +21,15 @@ from freqtrade.data.converter import (
     trades_to_ohlcv,
     trim_dataframe,
 )
-from freqtrade.data.history import (
+from orazen.data.history import (
     get_timerange,
     load_data,
     load_pair_history,
     validate_backtest_data,
 )
-from freqtrade.data.history.datahandlers import IDataHandler
-from freqtrade.enums import CandleType
-from freqtrade.exchange import timeframe_to_minutes, timeframe_to_seconds
+from orazen.data.history.datahandlers import IDataHandler
+from orazen.enums import CandleType
+from orazen.exchange import timeframe_to_minutes, timeframe_to_seconds
 from tests.conftest import generate_test_data, generate_trades_history, log_has, log_has_re
 from tests.data.test_history import _clean_test_file
 

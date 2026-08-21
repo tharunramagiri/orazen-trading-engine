@@ -24,7 +24,7 @@ def extract_command_partials():
     os.environ["NO_COLOR"] = "1"
 
     # Import Arguments here to avoid circular imports and ensure COLUMNS is set
-    from freqtrade.commands.arguments import Arguments
+    from orazen.commands.arguments import Arguments
 
     subcommands = [
         "trade",
@@ -91,13 +91,13 @@ def extract_command_partials():
         else:
             print(f" Warning: subcommand '{command}' not found in parser")
 
-    # freqtrade-client still uses subprocess as requested
-    print("Running for freqtrade-client")
+    # orazen-client still uses subprocess as requested
+    print("Running for orazen-client")
     result_client = subprocess.run(
-        ["freqtrade-client", "--show"], capture_output=True, text=True, check=True
+        ["orazen-client", "--show"], capture_output=True, text=True, check=True
     )
 
-    _write_partial_file("docs/commands/freqtrade-client.md", result_client.stdout)
+    _write_partial_file("docs/commands/orazen-client.md", result_client.stdout)
 
 
 if __name__ == "__main__":

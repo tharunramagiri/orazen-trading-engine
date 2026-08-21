@@ -10,8 +10,8 @@ from unittest.mock import MagicMock
 import pytest
 import websockets
 
-from freqtrade.data.dataprovider import DataProvider
-from freqtrade.rpc.external_message_consumer import ExternalMessageConsumer
+from orazen.data.dataprovider import DataProvider
+from orazen.rpc.external_message_consumer import ExternalMessageConsumer
 from tests.conftest import log_has, log_has_re, log_has_when
 
 
@@ -181,7 +181,7 @@ async def test_emc_create_connection_success(default_conf, caplog, mocker):
     )
 
     mocker.patch(
-        "freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
+        "orazen.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
     )
     dp = DataProvider(default_conf, None, None, None)
     emc = ExternalMessageConsumer(default_conf, dp)
@@ -227,8 +227,8 @@ async def test_emc_create_connection_invalid_url(default_conf, caplog, mocker, h
 
     dp = DataProvider(default_conf, None, None, None)
     # Handle start explicitly to avoid messing with threading in tests
-    mocker.patch("freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start")
-    mocker.patch("freqtrade.rpc.api_server.ws.channel.create_channel")
+    mocker.patch("orazen.rpc.external_message_consumer.ExternalMessageConsumer.start")
+    mocker.patch("orazen.rpc.api_server.ws.channel.create_channel")
     emc = ExternalMessageConsumer(default_conf, dp)
 
     try:
@@ -264,14 +264,14 @@ async def test_emc_create_connection_error(default_conf, caplog, mocker):
 
     dp = DataProvider(default_conf, None, None, None)
     # Handle start explicitly to avoid messing with threading in tests
-    mocker.patch("freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start")
+    mocker.patch("orazen.rpc.external_message_consumer.ExternalMessageConsumer.start")
     emc = ExternalMessageConsumer(default_conf, dp)
 
     async def stop_running(*args, **kwargs):
         emc._running = False
 
     # Stop the connection loop on the first retry-sleep instead of waiting
-    mocker.patch("freqtrade.rpc.external_message_consumer.asyncio.sleep", side_effect=stop_running)
+    mocker.patch("orazen.rpc.external_message_consumer.asyncio.sleep", side_effect=stop_running)
 
     try:
         emc._running = True
@@ -304,7 +304,7 @@ async def test_emc_receive_messages_valid(default_conf, caplog, mocker):
     )
 
     mocker.patch(
-        "freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
+        "orazen.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
     )
 
     lock = asyncio.Lock()
@@ -351,7 +351,7 @@ async def test_emc_receive_messages_invalid(default_conf, caplog, mocker):
     )
 
     mocker.patch(
-        "freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
+        "orazen.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
     )
 
     lock = asyncio.Lock()
@@ -398,7 +398,7 @@ async def test_emc_receive_messages_timeout(default_conf, caplog, mocker):
     )
 
     mocker.patch(
-        "freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
+        "orazen.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
     )
 
     lock = asyncio.Lock()
@@ -449,7 +449,7 @@ async def test_emc_receive_messages_handle_error(default_conf, caplog, mocker):
     )
 
     mocker.patch(
-        "freqtrade.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
+        "orazen.rpc.external_message_consumer.ExternalMessageConsumer.start", MagicMock()
     )
 
     lock = asyncio.Lock()

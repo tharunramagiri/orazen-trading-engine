@@ -4,11 +4,11 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from freqtrade.data.dataprovider import DataProvider
-from freqtrade.enums import CandleType, RunMode
-from freqtrade.resolvers.strategy_resolver import StrategyResolver
-from freqtrade.strategy import merge_informative_pair, stoploss_from_absolute, stoploss_from_open
-from freqtrade.strategy.informative_decorator import InformativeCache, InformativeCacheKey
+from orazen.data.dataprovider import DataProvider
+from orazen.enums import CandleType, RunMode
+from orazen.resolvers.strategy_resolver import StrategyResolver
+from orazen.strategy import merge_informative_pair, stoploss_from_absolute, stoploss_from_open
+from orazen.strategy.informative_decorator import InformativeCache, InformativeCacheKey
 from tests.conftest import generate_test_data, get_patched_exchange
 
 
@@ -417,7 +417,7 @@ def test_informative_decorator(mocker, default_conf_usdt, trading_mode):
         ).copy()
 
     mocker.patch(
-        "freqtrade.data.dataprovider.DataProvider.historic_ohlcv", side_effect=test_historic_ohlcv
+        "orazen.data.dataprovider.DataProvider.historic_ohlcv", side_effect=test_historic_ohlcv
     )
 
     analyzed = strategy.advise_all_indicators(
@@ -571,7 +571,7 @@ def test_informative_decorator_cache(mocker, default_conf_usdt, runmode, expecte
         ).copy()
 
     mocker.patch(
-        "freqtrade.data.dataprovider.DataProvider.historic_ohlcv", side_effect=test_historic_ohlcv
+        "orazen.data.dataprovider.DataProvider.historic_ohlcv", side_effect=test_historic_ohlcv
     )
 
     _ = strategy.advise_all_indicators(

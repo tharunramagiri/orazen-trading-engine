@@ -6,12 +6,12 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from freqtrade.configuration import TimeRange
-from freqtrade.data.dataprovider import DataProvider
-from freqtrade.freqai.data_drawer import FreqaiDataDrawer
-from freqtrade.freqai.data_kitchen import FreqaiDataKitchen
-from freqtrade.resolvers import StrategyResolver
-from freqtrade.resolvers.freqaimodel_resolver import FreqaiModelResolver
+from orazen.configuration import TimeRange
+from orazen.data.dataprovider import DataProvider
+from orazen.freqai.data_drawer import FreqaiDataDrawer
+from orazen.freqai.data_kitchen import FreqaiDataKitchen
+from orazen.resolvers import StrategyResolver
+from orazen.resolvers.freqaimodel_resolver import FreqaiModelResolver
 from tests.conftest import get_patched_exchange
 
 
@@ -28,7 +28,7 @@ def freqai_conf(default_conf, tmp_path):
             "runmode": "backtest",
             "strategy": "freqai_test_strat",
             "user_data_dir": tmp_path,
-            "strategy-path": "freqtrade/tests/strategy/strats",
+            "strategy-path": "orazen/tests/strategy/strats",
             "freqaimodel": "LightGBMRegressor",
             "freqaimodel_path": "freqai/prediction_models",
             "timerange": "20180110-20180115",
@@ -109,7 +109,7 @@ def get_patched_data_kitchen(mocker, freqaiconf):
 
 
 def get_patched_data_drawer(mocker, freqaiconf):
-    # dd = mocker.patch('freqtrade.freqai.data_drawer', MagicMock())
+    # dd = mocker.patch('orazen.freqai.data_drawer', MagicMock())
     dd = FreqaiDataDrawer(freqaiconf)
     return dd
 

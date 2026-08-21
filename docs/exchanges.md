@@ -8,7 +8,7 @@ This page combines common gotchas and Information which are exchange-specific an
 
 ## Exchange configuration
 
-Freqtrade is based on [CCXT library](https://github.com/ccxt/ccxt) that supports over 100 cryptocurrency
+Orazen is based on [CCXT library](https://github.com/ccxt/ccxt) that supports over 100 cryptocurrency
 exchange markets and trading APIs. The complete up-to-date list can be found in the
 [CCXT repo homepage](https://github.com/ccxt/ccxt/tree/master/python).
 However, the bot was tested by the development team with only a few exchanges.
@@ -72,7 +72,7 @@ Binance supports [time_in_force](configuration.md#understand-order_time_in_force
 For Binance, it is suggested to add `"BNB/<STAKE>"` to your blacklist to avoid issues, unless you are willing to maintain enough extra `BNB` on the account or unless you're willing to disable using `BNB` for fees.
 Binance accounts may use `BNB` for fees, and if a trade happens to be on `BNB`, further trades may consume this position and make the initial BNB trade unsellable as the expected amount is not there anymore.
 
-If not enough `BNB` is available to cover transaction fees, then fees will not be covered by `BNB` and no fee reduction will occur. Freqtrade will never buy BNB to cover for fees. BNB needs to be bought and monitored manually to this end.
+If not enough `BNB` is available to cover transaction fees, then fees will not be covered by `BNB` and no fee reduction will occur. Orazen will never buy BNB to cover for fees. BNB needs to be bought and monitored manually to this end.
 
 ### Binance sites
 
@@ -83,12 +83,12 @@ Binance has been split into 2, and users must use the correct ccxt exchange ID f
 
 ### Binance RSA keys
 
-Freqtrade supports binance RSA API keys.
+Orazen supports binance RSA API keys.
 
 We recommend to use them as environment variable.
 
 ``` bash
-export FREQTRADE__EXCHANGE__SECRET="$(cat ./rsa_binance.private)"
+export ORAZEN__EXCHANGE__SECRET="$(cat ./rsa_binance.private)"
 ```
 
 They can however also be configured via configuration file. Since json doesn't support multi-line strings, you'll have to replace all newlines with `\n` to have a valid json file.
@@ -125,11 +125,11 @@ When trading on Binance Futures market, orderbook must be used because there is 
 #### Binance isolated futures settings
 
 Users will also have to have the futures-setting "Position Mode" set to "One-way Mode", and "Asset Mode" set to "Single-Asset Mode".
-These settings will be checked on startup, and freqtrade will show an error if this setting is wrong.
+These settings will be checked on startup, and orazen will show an error if this setting is wrong.
 
 ![Binance futures settings](assets/binance_futures_settings.png)
 
-Freqtrade will not attempt to change these settings.
+Orazen will not attempt to change these settings.
 
 #### Binance BNFCR futures
 
@@ -150,7 +150,7 @@ To use BNFCR futures, you will have to have the following combination of setting
 The `stake_currency` setting defines the markets the bot will be operating in. This choice is really arbitrary.
 
 On the exchange, you'll have to use "Multi-asset Mode" - and "Position Mode set to "One-way Mode".  
-Freqtrade will check these settings on startup, but won't attempt to change them.
+Orazen will check these settings on startup, but won't attempt to change them.
 
 ## Bingx
 
@@ -169,11 +169,11 @@ Kraken supports [time_in_force](configuration.md#understand-order_time_in_force)
 
 ### Historic Kraken data
 
-The Kraken API does only provide 720 historic candles, which is sufficient for Freqtrade dry-run and live trade modes, but is a problem for backtesting.
+The Kraken API does only provide 720 historic candles, which is sufficient for Orazen dry-run and live trade modes, but is a problem for backtesting.
 To download data for the Kraken exchange, using `--dl-trades` is mandatory, otherwise the bot will download the same 720 candles over and over, and you'll not have enough backtest data.
 
 To speed up downloading, you can download the [trades zip files](https://support.kraken.com/hc/en-us/articles/360047543791-Downloadable-historical-market-data-time-and-sales-) kraken provides.
-These are usually updated once per quarter. Freqtrade expects these files to be placed in `user_data/data/kraken/trades_csv`.
+These are usually updated once per quarter. Orazen expects these files to be placed in `user_data/data/kraken/trades_csv`.
 
 A structure as follows can make sense if using incremental files, with the "full" history in one directory, and incremental files in different directories.
 The assumption for this mode is that the data is downloaded and unzipped keeping filenames as they are.
@@ -195,23 +195,23 @@ Not having this will lead to incomplete data, and therefore invalid results whil
         └── XBTEUR.csv
 ```
 
-You can convert these files into freqtrade files:
+You can convert these files into orazen files:
 
 ``` bash
-freqtrade convert-trade-data --exchange kraken --format-from kraken_csv --format-to feather
+orazen convert-trade-data --exchange kraken --format-from kraken_csv --format-to feather
 # Convert trade data to different ohlcv timeframes
-freqtrade trades-to-ohlcv -p BTC/EUR BCH/EUR --exchange kraken -t 1m 5m 15m 1h
+orazen trades-to-ohlcv -p BTC/EUR BCH/EUR --exchange kraken -t 1m 5m 15m 1h
 ```
 
 The converted data also makes downloading data possible, and will start the download after the latest loaded trade.
 
 ``` bash
-freqtrade download-data --exchange kraken --dl-trades -p BTC/EUR BCH/EUR 
+orazen download-data --exchange kraken --dl-trades -p BTC/EUR BCH/EUR 
 ```
 
 !!! Warning "Downloading data from kraken"
     Downloading kraken data will require significantly more memory (RAM) than any other exchange, as the trades-data needs to be converted into candles on your machine.
-    It will also take a long time, as freqtrade will need to download every single trade that happened on the exchange for the pair / timerange combination, therefore please be patient.
+    It will also take a long time, as orazen will need to download every single trade that happened on the exchange for the pair / timerange combination, therefore please be patient.
 
 !!! Warning "rateLimit tuning"
     Please pay attention that rateLimit configuration entry holds delay in milliseconds between requests, NOT requests/sec rate.
@@ -241,7 +241,7 @@ Kraken Futures uses the exchange id `krakenfutures` and supports isolated future
 
 !!! Note "Flex (Multi-collateral) Accounts"
     Kraken Futures flex accounts allow collateral in multiple currencies, while trading remains USD-settled.
-    Freqtrade derives the `USD` balance from Kraken margin fields, so keep `stake_currency` set to `USD`.
+    Orazen derives the `USD` balance from Kraken margin fields, so keep `stake_currency` set to `USD`.
 
 ## Kucoin
 
@@ -298,7 +298,7 @@ Using the wrong exchange will result in the error "OKX Error 50119: API key does
 
 !!! Warning "Futures"
     OKX Futures has the concept of "position mode" - which can be "Buy/Sell" or long/short (hedge mode).
-    Freqtrade supports both modes (we recommend to use Buy/Sell mode) - but changing the mode mid-trading is not supported and will lead to exceptions and failures to place trades.
+    Orazen supports both modes (we recommend to use Buy/Sell mode) - but changing the mode mid-trading is not supported and will lead to exceptions and failures to place trades.
     OKX also only provides MARK candles for the past ~3 months. Backtesting futures prior to that date will therefore lead to slight deviations, as funding-fees cannot be calculated correctly without this data.
 
 ## Gate.io
@@ -328,7 +328,7 @@ Without these permissions, the bot will not start correctly and show errors like
 Bybit supports [time_in_force](configuration.md#understand-order_time_in_force) with settings "GTC" (good till cancelled), "FOK" (full-or-cancel), "IOC" (immediate-or-cancel) and "PO" (Post only) settings.
 
 !!! Warning "Unified accounts"
-    Freqtrade assumes accounts to be dedicated to the bot.
+    Orazen assumes accounts to be dedicated to the bot.
     We therefore recommend the usage of one subaccount per bot. This is especially important when using unified accounts.  
     Other configurations (multiple bots on one account, manual non-bot trades on the bot account) are not supported and may lead to unexpected behavior.
 
@@ -336,7 +336,7 @@ Bybit supports [time_in_force](configuration.md#understand-order_time_in_force) 
 
 Futures trading on bybit is supported for isolated futures mode.
 
-On startup, freqtrade will set the position mode to "One-way Mode" for the whole (sub)account. This avoids making this call over and over again (slowing down bot operations), but means that manual changes to this setting may result in exceptions and errors.
+On startup, orazen will set the position mode to "One-way Mode" for the whole (sub)account. This avoids making this call over and over again (slowing down bot operations), but means that manual changes to this setting may result in exceptions and errors.
 
 As bybit doesn't provide funding rate history, the dry-run calculation is used for live trades as well.
 
@@ -351,7 +351,7 @@ We do strongly recommend to limit all API keys to the IP you're going to use it 
 ### Bybit Demo Mode
 
 Bybit has a [demo mode](https://learn.bybit.com/en/bybit-guide/how-to-use-bybit-demo-trading) - which can be activated by setting `exchange.demo_trading` to `true` in the configuration.
-Bybit uses live markets to simulate your trades (without market impact) - making it work very similar to freqtrade's dry-run mode.  
+Bybit uses live markets to simulate your trades (without market impact) - making it work very similar to orazen's dry-run mode.  
 
 You'll need to use separate API keys for demo trading, which you can create on bybit's demo page.
 
@@ -381,7 +381,7 @@ Bitget supports [time_in_force](configuration.md#understand-order_time_in_force)
 
 Futures trading on bitget is supported for isolated futures mode.
 
-On startup, freqtrade will set the position mode to "One-way Mode" for the whole (sub)account. This avoids making this call over and over again (slowing down bot operations), but means that manual changes to this setting may result in exceptions and errors.
+On startup, orazen will set the position mode to "One-way Mode" for the whole (sub)account. This avoids making this call over and over again (slowing down bot operations), but means that manual changes to this setting may result in exceptions and errors.
 
 ## Hyperliquid
 
@@ -389,9 +389,9 @@ On startup, freqtrade will set the position mode to "One-way Mode" for the whole
     Hyperliquid supports `stoploss_on_exchange` and uses `stop-loss-limit` orders. It provides great advantages, so we recommend to benefit from it.
 
 !!! Warning "Unified accounts"
-    Hyperliquid unified accounts are supported - though this relies freqtrade's assumption of "owning" the account, and being the only one trading on it (in this case, extended to both spot and futures).
+    Hyperliquid unified accounts are supported - though this relies orazen's assumption of "owning" the account, and being the only one trading on it (in this case, extended to both spot and futures).
     We hence recommend the usage of subaccounts where possible, and to avoid manual trading on the same account while the bot is running.
-    Freqtrade will attempt to detect the account type on startup - changing the account type mid-trading is not supported and may lead to exceptions and errors.
+    Orazen will attempt to detect the account type on startup - changing the account type mid-trading is not supported and may lead to exceptions and errors.
 
 Hyperliquid is a Decentralized Exchange (DEX). Decentralized exchanges work a bit different compared to normal exchanges. Instead of authenticating private API calls using an API key, private API calls need to be signed with the private key of your wallet (We recommend using an api Wallet for this, generated either on Hyperliquid or in your wallet of choice).
 This needs to be configured like this:
@@ -417,7 +417,7 @@ Hyperliquid handles deposits and withdrawals on the Arbitrum One chain, a Layer 
 !!! Info "Some general best practices (non exhaustive)"
     * Beware of supply chain attacks, like pip package poisoning etcetera. Whenever you use your private key, make sure your environment is safe.
     * Don't use your actual wallet private key for trading. Use the Hyperliquid [API generator](https://app.hyperliquid.xyz/API) to create a separate API wallet.
-    * Don't store your actual wallet private key on the server you use for freqtrade. Use the API wallet private key instead. This key won't allow withdrawals, only trading.
+    * Don't store your actual wallet private key on the server you use for orazen. Use the API wallet private key instead. This key won't allow withdrawals, only trading.
     * Always keep your mnemonic phrase and private key private.
     * Don't use the same mnemonic as the one you had to backup when initializing a hardware wallet, using the same mnemonic basically deletes the security of your hardware wallet.
     * Create a different software wallet, only transfer the funds you want to trade with to that wallet, and use that wallet to trade on Hyperliquid.
@@ -430,7 +430,7 @@ Hyperliquid handles deposits and withdrawals on the Arbitrum One chain, a Layer 
 ### Hyperliquid Subaccount
 
 Hyperliquid allows you to create subaccounts with sufficient previous trading volume.  
-To use subaccounts with Freqtrade, you will need to use the following configuration pattern:
+To use subaccounts with Orazen, you will need to use the following configuration pattern:
 
 ``` json
 "exchange": {
@@ -450,7 +450,7 @@ Your balance and trades will now be used from your subaccount - and no longer fr
 
 ### Hyperliquid Vault
 
-Hyperliquid allows you to create vaults. To use vaults with Freqtrade, you will need to use the following configuration pattern:
+Hyperliquid allows you to create vaults. To use vaults with Orazen, you will need to use the following configuration pattern:
 
 ``` json
 "exchange": {
@@ -477,7 +477,7 @@ The Hyperliquid API does not provide historic data beyond the single call to fet
 Hyperliquid supports HIP-3 decentralized exchanges (DEXes), which are independent exchanges built on top of the Hyperliquid infrastructure.
 These DEXes operate similarly to the main Hyperliquid exchange but are community-created and managed.
 
-To trade on HIP-3 DEXes with Freqtrade, you need to add them to your configuration using the `hip3_dexes` parameter:
+To trade on HIP-3 DEXes with Orazen, you need to add them to your configuration using the `hip3_dexes` parameter:
 
 ```json
 "exchange": {
@@ -493,7 +493,7 @@ Replace `"dex_name_1"` and `"dex_name_2"` with the actual names of the HIP-3 DEX
 !!! Warning "Performance and Rate Limit Impact"
     Each HIP-3 DEX you add significantly impacts bot performance and rate limits.
 
-    * **Additional API Calls**: For each HIP-3 DEX configured, Freqtrade needs to make additional API calls.
+    * **Additional API Calls**: For each HIP-3 DEX configured, Orazen needs to make additional API calls.
     * **Rate Limit Pressure**: Additional API calls contribute to Hyperliquid's strict rate limits. With multiple DEXes, you may hit rate limits faster, or rather, slow down bot operations due to enforced delays.
 
     Please only add HIP-3 DEXes that you actively trade on. Monitor your logs for rate limit warnings or signs of slowed operations, and adjust your configuration accordingly.  
@@ -538,15 +538,15 @@ pip3 install web3
 ### Getting latest price / Incomplete candles
 
 Most exchanges return current incomplete candle via their OHLCV/klines API interface.
-By default, Freqtrade assumes that incomplete candle is fetched from the exchange and removes the last candle assuming it's the incomplete candle.
+By default, Orazen assumes that incomplete candle is fetched from the exchange and removes the last candle assuming it's the incomplete candle.
 
 Whether your exchange returns incomplete candles or not can be checked using [the helper script](developer.md#incomplete-candles) from the Contributor documentation.
 
-Due to the danger of repainting, Freqtrade does not allow you to use this incomplete candle.
+Due to the danger of repainting, Orazen does not allow you to use this incomplete candle.
 
 However, if it is based on the need for the latest price for your strategy - then this requirement can be acquired using the [data provider](strategy-customization.md#possible-options-for-dataprovider) from within the strategy.
 
-### Advanced Freqtrade Exchange configuration
+### Advanced Orazen Exchange configuration
 
 Advanced options can be configured using the `_ft_has_params` setting, which will override Defaults and exchange-specific behavior.
 

@@ -13,18 +13,18 @@ import pandas as pd
 import pytest
 from xdist.scheduler.loadscope import LoadScopeScheduling
 
-from freqtrade import constants
-from freqtrade.commands import Arguments
-from freqtrade.data.converter import ohlcv_to_dataframe, trades_list_to_df
-from freqtrade.enums import CandleType, MarginMode, SignalDirection, TradingMode
-from freqtrade.exchange import Exchange, timeframe_to_minutes, timeframe_to_seconds
-from freqtrade.freqtradebot import FreqtradeBot
-from freqtrade.persistence import LocalTrade, Order, Trade, init_db
-from freqtrade.persistence.custom_data import _CustomData
-from freqtrade.resolvers import ExchangeResolver
-from freqtrade.system import set_mp_start_method
-from freqtrade.util import dt_now, dt_ts
-from freqtrade.worker import Worker
+from orazen import constants
+from orazen.commands import Arguments
+from orazen.data.converter import ohlcv_to_dataframe, trades_list_to_df
+from orazen.enums import CandleType, MarginMode, SignalDirection, TradingMode
+from orazen.exchange import Exchange, timeframe_to_minutes, timeframe_to_seconds
+from orazen.orazenbot import OrazenBot
+from orazen.persistence import LocalTrade, Order, Trade, init_db
+from orazen.persistence.custom_data import _CustomData
+from orazen.resolvers import ExchangeResolver
+from orazen.system import set_mp_start_method
+from orazen.util import dt_now, dt_ts
+from orazen.worker import Worker
 from tests.conftest_trades import (
     leverage_trade,
     mock_trade_1,
@@ -54,7 +54,7 @@ np.seterr(all="raise")
 
 CURRENT_TEST_STRATEGY = "StrategyTestV3"
 TRADE_SIDES = ("long", "short")
-EXMS = "freqtrade.exchange.exchange.Exchange"
+EXMS = "orazen.exchange.exchange.Exchange"
 
 
 def pytest_addoption(parser):
@@ -233,7 +233,7 @@ def get_mock_coro(return_value=None, side_effect=None):
 
 def patched_configuration_load_config_file(mocker, config) -> None:
     mocker.patch(
-        "freqtrade.configuration.load_config.load_config_file", lambda *args, **kwargs: config
+        "orazen.configuration.load_config.load_config_file", lambda *args, **kwargs: config
     )
 
 
@@ -247,7 +247,7 @@ def patch_exchange(
     mocker.patch(f"{EXMS}.precisionMode", PropertyMock(return_value=2))
     mocker.patch(f"{EXMS}.precision_mode_price", PropertyMock(return_value=2))
     # Temporary patch ...
-    mocker.patch("freqtrade.exchange.bybit.Bybit.cache_leverage_tiers")
+    mocker.patch("orazen.exchange.bybit.Bybit.cache_leverage_tiers")
 
     if mock_markets:
         mocker.patch(f"{EXMS}._load_async_markets", return_value={})
@@ -257,7 +257,7 @@ def patch_exchange(
 
     if mock_supported_modes:
         mocker.patch(
-            f"freqtrade.exchange.{exchange}.{exchange.capitalize()}"
+            f"orazen.exchange.{exchange}.{exchange.capitalize()}"
             "._supported_trading_mode_margin_pairs",
             PropertyMock(
                 return_value=[
@@ -291,12 +291,12 @@ def get_patched_exchange(
 
 
 def patch_wallet(mocker, free=999.9) -> None:
-    mocker.patch("freqtrade.wallets.Wallets.get_free", MagicMock(return_value=free))
+    mocker.patch("orazen.wallets.Wallets.get_free", MagicMock(return_value=free))
 
 
 def patch_whitelist(mocker, conf) -> None:
     mocker.patch(
-        "freqtrade.freqtradebot.FreqtradeBot._refresh_active_whitelist",
+        "orazen.orazenbot.OrazenBot._refresh_active_whitelist",
         MagicMock(return_value=conf["exchange"]["pair_whitelist"]),
     )
 
@@ -304,31 +304,31 @@ def patch_whitelist(mocker, conf) -> None:
 # Functions for recurrent object patching
 
 
-def patch_freqtradebot(mocker, config) -> None:
+def patch_orazenbot(mocker, config) -> None:
     """
     This function patch _init_modules() to not call dependencies
     :param mocker: a Mocker object to apply patches
     :param config: Config to pass to the bot
     :return: None
     """
-    mocker.patch("freqtrade.freqtradebot.RPCManager", MagicMock())
+    mocker.patch("orazen.orazenbot.RPCManager", MagicMock())
     patch_exchange(mocker)
-    mocker.patch("freqtrade.freqtradebot.RPCManager._init", MagicMock())
-    mocker.patch("freqtrade.freqtradebot.RPCManager.send_msg", MagicMock())
+    mocker.patch("orazen.orazenbot.RPCManager._init", MagicMock())
+    mocker.patch("orazen.orazenbot.RPCManager.send_msg", MagicMock())
     patch_whitelist(mocker, config)
-    mocker.patch("freqtrade.freqtradebot.ExternalMessageConsumer")
-    mocker.patch("freqtrade.configuration.config_validation._validate_consumers")
+    mocker.patch("orazen.orazenbot.ExternalMessageConsumer")
+    mocker.patch("orazen.configuration.config_validation._validate_consumers")
 
 
-def get_patched_freqtradebot(mocker, config) -> FreqtradeBot:
+def get_patched_orazenbot(mocker, config) -> OrazenBot:
     """
     This function patches _init_modules() to not call dependencies
     :param mocker: a Mocker object to apply patches
     :param config: Config to pass to the bot
-    :return: FreqtradeBot
+    :return: OrazenBot
     """
-    patch_freqtradebot(mocker, config)
-    return FreqtradeBot(config)
+    patch_orazenbot(mocker, config)
+    return OrazenBot(config)
 
 
 def get_patched_worker(mocker, config) -> Worker:
@@ -338,12 +338,12 @@ def get_patched_worker(mocker, config) -> Worker:
     :param config: Config to pass to the bot
     :return: Worker
     """
-    patch_freqtradebot(mocker, config)
+    patch_orazenbot(mocker, config)
     return Worker(args=None, config=config)
 
 
 def patch_get_signal(
-    freqtrade: FreqtradeBot,
+    orazen: OrazenBot,
     enter_long=True,
     exit_long=False,
     enter_short=False,
@@ -366,7 +366,7 @@ def patch_get_signal(
 
         return direction, enter_tag
 
-    freqtrade.strategy.get_entry_signal = patched_get_entry_signal
+    orazen.strategy.get_entry_signal = patched_get_entry_signal
 
     def patched_get_exit_signal(pair, timeframe, dataframe, is_short):
         if is_short:
@@ -375,9 +375,9 @@ def patch_get_signal(
             return enter_long, exit_long, exit_tag
 
     # returns (enter, exit)
-    freqtrade.strategy.get_exit_signal = patched_get_exit_signal
+    orazen.strategy.get_exit_signal = patched_get_exit_signal
 
-    freqtrade.exchange.refresh_latest_ohlcv = lambda p: None
+    orazen.exchange.refresh_latest_ohlcv = lambda p: None
 
 
 def create_mock_trades(fee, is_short: bool | None = False, use_db: bool = True):
@@ -500,7 +500,7 @@ def create_mock_trades_usdt(fee, is_short: bool | None = False, use_db: bool = T
 
 @pytest.fixture(autouse=True)
 def patch_gc(mocker) -> None:
-    mocker.patch("freqtrade.main.gc_set_threshold")
+    mocker.patch("orazen.main.gc_set_threshold")
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -548,7 +548,7 @@ def patch_torch_initlogs(mocker) -> None:
 @pytest.fixture(autouse=True)
 def user_dir(mocker, tmp_path) -> Path:
     user_dir = tmp_path / "user_data"
-    mocker.patch("freqtrade.configuration.configuration.create_userdata_dir", return_value=user_dir)
+    mocker.patch("orazen.configuration.configuration.create_userdata_dir", return_value=user_dir)
     return user_dir
 
 
@@ -576,7 +576,7 @@ def patch_coingecko(mocker) -> None:
         ]
     )
     mocker.patch.multiple(
-        "freqtrade.rpc.fiat_convert.FtCoinGeckoApi",
+        "orazen.rpc.fiat_convert.FtCoinGeckoApi",
         get_price=tickermock,
         get_coins_list=listmock,
     )

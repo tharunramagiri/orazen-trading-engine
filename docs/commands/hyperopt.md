@@ -1,5 +1,5 @@
 ``` output
-usage: freqtrade hyperopt [-h] [-v] [--no-color] [--logfile FILE] [-V]
+usage: orazen hyperopt [-h] [-v] [--no-color] [--logfile FILE] [-V]
                           [-c PATH] [-d PATH] [--userdir PATH] [-s NAME]
                           [--strategy-path PATH] [--recursive-strategy-search]
                           [--freqaimodel NAME] [--freqaimodel-path PATH]

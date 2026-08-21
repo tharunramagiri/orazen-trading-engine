@@ -4,14 +4,14 @@ from unittest.mock import MagicMock
 import pytest
 import rapidjson
 
-from freqtrade.commands.build_config_commands import start_new_config
-from freqtrade.configuration.deploy_config import (
+from orazen.commands.build_config_commands import start_new_config
+from orazen.configuration.deploy_config import (
     ask_user_config,
     ask_user_overwrite,
     validate_is_float,
     validate_is_int,
 )
-from freqtrade.exceptions import OperationalException
+from orazen.exceptions import OperationalException
 from tests.conftest import get_args, log_has_re
 
 
@@ -39,7 +39,7 @@ def test_start_new_config(mocker, caplog, exchange):
     wt_mock = mocker.patch.object(Path, "write_text", MagicMock())
     mocker.patch.object(Path, "exists", MagicMock(return_value=True))
     unlink_mock = mocker.patch.object(Path, "unlink", MagicMock())
-    mocker.patch("freqtrade.configuration.deploy_config.ask_user_overwrite", return_value=True)
+    mocker.patch("orazen.configuration.deploy_config.ask_user_overwrite", return_value=True)
 
     sample_selections = {
         "max_open_trades": 3,
@@ -58,11 +58,11 @@ def test_start_new_config(mocker, caplog, exchange):
         "telegram_chat_id": "1144444",
         "api_server": False,
         "api_server_listen_addr": "127.0.0.1",
-        "api_server_username": "freqtrader",
+        "api_server_username": "orazenr",
         "api_server_password": "MoneyMachine",
     }
     mocker.patch(
-        "freqtrade.configuration.deploy_config.ask_user_config", return_value=sample_selections
+        "orazen.configuration.deploy_config.ask_user_config", return_value=sample_selections
     )
     args = ["new-config", "--config", "coolconfig.json"]
     start_new_config(get_args(args))
@@ -81,7 +81,7 @@ def test_start_new_config(mocker, caplog, exchange):
 
 def test_start_new_config_exists(mocker, caplog):
     mocker.patch.object(Path, "exists", MagicMock(return_value=True))
-    mocker.patch("freqtrade.configuration.deploy_config.ask_user_overwrite", return_value=False)
+    mocker.patch("orazen.configuration.deploy_config.ask_user_overwrite", return_value=False)
     args = ["new-config", "--config", "coolconfig.json"]
     with pytest.raises(OperationalException, match=r"Configuration .* already exists\."):
         start_new_config(get_args(args))
@@ -92,14 +92,14 @@ def test_ask_user_overwrite(mocker):
     Once https://github.com/tmbo/questionary/issues/35 is implemented, improve this test.
     """
     prompt_mock = mocker.patch(
-        "freqtrade.configuration.deploy_config.prompt", return_value={"overwrite": False}
+        "orazen.configuration.deploy_config.prompt", return_value={"overwrite": False}
     )
     assert not ask_user_overwrite(Path("test.json"))
     assert prompt_mock.call_count == 1
 
     prompt_mock.reset_mock()
     prompt_mock = mocker.patch(
-        "freqtrade.configuration.deploy_config.prompt", return_value={"overwrite": True}
+        "orazen.configuration.deploy_config.prompt", return_value={"overwrite": True}
     )
     assert ask_user_overwrite(Path("test.json"))
     assert prompt_mock.call_count == 1
@@ -110,13 +110,13 @@ def test_ask_user_config(mocker):
     Once https://github.com/tmbo/questionary/issues/35 is implemented, improve this test.
     """
     prompt_mock = mocker.patch(
-        "freqtrade.configuration.deploy_config.prompt", return_value={"overwrite": False}
+        "orazen.configuration.deploy_config.prompt", return_value={"overwrite": False}
     )
     answers = ask_user_config()
     assert isinstance(answers, dict)
     assert prompt_mock.call_count == 1
 
-    prompt_mock = mocker.patch("freqtrade.configuration.deploy_config.prompt", return_value={})
+    prompt_mock = mocker.patch("orazen.configuration.deploy_config.prompt", return_value={})
 
     with pytest.raises(OperationalException, match=r"User interrupted interactive questions\."):
         ask_user_config()

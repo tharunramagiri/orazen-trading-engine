@@ -6,7 +6,7 @@ on:
        package_name:
         description: 'Package name to clean up'
         required: false
-        default: 'freqtrade'
+        default: 'orazen'
         type: string
 
   workflow_dispatch:
@@ -14,11 +14,11 @@ on:
       package_name:
         description: 'Package name to clean up'
         required: false
-        default: 'freqtrade'
+        default: 'orazen'
         type: choice
         options:
-          - 'freqtrade'
-          - 'freqtrade-devcontainer'
+          - 'orazen'
+          - 'orazen-devcontainer'
       delete-untagged:
         description: 'Whether to delete only untagged images'
         required: false
@@ -30,7 +30,7 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  PACKAGE_NAME: "freqtrade"
+  PACKAGE_NAME: "orazen"
 
 permissions: {}
 
@@ -38,7 +38,7 @@ jobs:
   deploy-docker:
     name: "Delete Packages"
     runs-on: ubuntu-24.04
-    if: github.repository == 'freqtrade/freqtrade'
+    if: github.repository == 'orazen/orazen'
     permissions:
       packages: write  # Needed to delete package versions
 

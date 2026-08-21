@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from freqtrade.util import (
+from orazen.util import (
     decimals_per_coin,
     fmt_coin,
     fmt_coin2,

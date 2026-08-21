@@ -115,7 +115,7 @@
         "enabled": false,
         "listen_ip_address": "127.0.0.1",
         "listen_port": 8080,
-        "username": "freqtrader",
+        "username": "orazenr",
         "password": "SuperSecurePassword"
     },
     "db_url": "sqlite:///tradesv3.sqlite",

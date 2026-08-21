@@ -1,10 +1,10 @@
 # Contributing
 
-## Contribute to freqtrade
+## Contribute to orazen
 
 Feel like our bot is missing a feature? We welcome your pull requests! 
 
-Issues labeled [good first issue](https://github.com/freqtrade/freqtrade/labels/good%20first%20issue) can be good first contributions, and will help get you familiar with the codebase.
+Issues labeled [good first issue](https://github.com/orazen/orazen/labels/good%20first%20issue) can be good first contributions, and will help get you familiar with the codebase.
 
 Few pointers for contributions:
 
@@ -20,11 +20,11 @@ The final responsibility for the code with the PR author, not with the AI, which
 - **Never let an LLM speak for you** - all comments, issues and PR descriptions should be written in your own words, reflecting your own understanding.
 - **Never let an LLM think for you** - only submit contributions you fully understand and can explain.
 
-If you are unsure, discuss the feature on our [discord server](https://discord.gg/p7nuUNVfP7) or in a [issue](https://github.com/freqtrade/freqtrade/issues) before a Pull Request.
+If you are unsure, discuss the feature on our [discord server](https://discord.gg/p7nuUNVfP7) or in a [issue](https://github.com/orazen/orazen/issues) before a Pull Request.
 
 ## Getting started
 
-Best start by reading the [documentation](https://www.freqtrade.io/) to get a feel for what is possible with the bot, or head straight to the [Developer-documentation](https://www.freqtrade.io/en/latest/developer/) (WIP) which should help you getting started.
+Best start by reading the [documentation](https://www.orazen.io/) to get a feel for what is possible with the bot, or head straight to the [Developer-documentation](https://www.orazen.io/en/latest/developer/) (WIP) which should help you getting started.
 
 ## Before sending the PR
 
@@ -84,7 +84,7 @@ ruff format .
 Check your code with mypy to ensure that it follows the type-hinting rules.
 
 ``` bash
-mypy freqtrade
+mypy orazen
 ```
 
 ## (Core)-Committer Guide
@@ -132,11 +132,11 @@ Exceptions:
 
 Contributors may be given commit privileges. Preference will be given to those with:
 
-1. Past contributions to Freqtrade and other related open source projects. Contributions to Freqtrade include both code (both accepted and pending) and friendly participation in the issue tracker and Pull request reviews. Both quantity and quality are considered.
+1. Past contributions to Orazen and other related open source projects. Contributions to Orazen include both code (both accepted and pending) and friendly participation in the issue tracker and Pull request reviews. Both quantity and quality are considered.
 1. A coding style that the other core committers find simple, minimal, and clean.
 1. Access to resources for cross-platform development and testing.
 1. Time to devote to the project regularly.
 
-Being a Committer does not automatically grant write permission on `develop` or `stable` for security reasons (Users trust Freqtrade with their Exchange API keys).
+Being a Committer does not automatically grant write permission on `develop` or `stable` for security reasons (Users trust Orazen with their Exchange API keys).
 
 After being Committer for some time, a Committer may be named Core Committer and given full repository access.

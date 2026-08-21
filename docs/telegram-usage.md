@@ -15,13 +15,13 @@ Send the message `/newbot`.
 
 > Alright, a new bot. How are we going to call it? Please choose a name for your bot.
 
-Choose the public name of your bot (e.x. `Freqtrade bot`)
+Choose the public name of your bot (e.x. `Orazen bot`)
 
 *BotFather response:*
 
 > Good. Now let's choose a username for your bot. It must end in `bot`. Like this, for example: TetrisBot or tetris_bot.
 
-Choose the name id of your bot and send it to the BotFather (e.g. "`My_own_freqtrade_bot`")
+Choose the name id of your bot and send it to the BotFather (e.g. "`My_own_orazen_bot`")
 
 *BotFather response:*
 
@@ -45,7 +45,7 @@ Get your "Id", you will use it for the config parameter `chat_id`.
 
 #### Use Group id
 
-To get the group ID, you can add the bot to the group, start freqtrade, and issue a `/tg_info` command.
+To get the group ID, you can add the bot to the group, start orazen, and issue a `/tg_info` command.
 This will return the group id to you, without having to use some random bot.
 While "chat_id" is still required, it doesn't need to be set to this particular group id for this command.
 
@@ -60,14 +60,14 @@ The response will also contain the "topic_id" if necessary - both in a format re
 }
 ```
 
-For the Freqtrade configuration, you can then use the full value (including `-` ) as string:
+For the Orazen configuration, you can then use the full value (including `-` ) as string:
 
 ```json
    "chat_id": "-1001332619709"
 ```
 
 !!! Warning "Using telegram groups"
-    When using telegram groups, you're giving every member of the telegram group access to your freqtrade bot and to all commands possible via telegram. Please make sure that you can trust everyone in the telegram group to avoid unpleasant surprises.
+    When using telegram groups, you're giving every member of the telegram group access to your orazen bot and to all commands possible via telegram. Please make sure that you can trust everyone in the telegram group to avoid unpleasant surprises.
 
 ##### Group Topic ID
 
@@ -96,7 +96,7 @@ In the below example, only the user with the id "1234567" is allowed to control 
 
 ## Control telegram noise
 
-Freqtrade provides means to control the verbosity of your telegram bot.
+Orazen provides means to control the verbosity of your telegram bot.
 Each setting has the following possible values:
 
 * `on` - Messages will be sent, and user will be notified.

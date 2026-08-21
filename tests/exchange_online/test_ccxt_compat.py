@@ -2,17 +2,17 @@
 Tests in this file do NOT mock network calls, so they are expected to be fluky at times.
 
 However, these tests should give a good idea to determine if a new exchange is
-suitable to run with freqtrade.
+suitable to run with orazen.
 """
 
 from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from freqtrade.enums import CandleType
-from freqtrade.exchange import timeframe_to_minutes, timeframe_to_prev_date
-from freqtrade.exchange.exchange import Exchange, timeframe_to_msecs
-from freqtrade.util import dt_floor_day, dt_now, dt_ts
+from orazen.enums import CandleType
+from orazen.exchange import timeframe_to_minutes, timeframe_to_prev_date
+from orazen.exchange.exchange import Exchange, timeframe_to_msecs
+from orazen.util import dt_floor_day, dt_now, dt_ts
 from tests.exchange_online.conftest import EXCHANGE_FIXTURE_TYPE
 
 
