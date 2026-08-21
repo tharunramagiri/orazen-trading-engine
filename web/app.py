@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
@@ -13,15 +13,36 @@ app.mount('/static', StaticFiles(directory=BASE / 'static'), name='static')
 async def landing():
     return (BASE / 'index.html').read_text()
 
-@app.get('/pricing')
+@app.get('/pricing', response_class=HTMLResponse)
 async def pricing():
+    return (BASE / 'pricing.html').read_text()
+
+@app.post('/api/checkout')
+async def checkout(request: Request):
+    body = await request.json()
+    plan = body.get('plan', 'starter')
+    email = body.get('email', '')
+    name = body.get('name', '')
+
+    # Stripe placeholder — replace with actual Stripe integration
+    # For now, redirect to a placeholder
     return JSONResponse({
-        "plans": [
-            {"name": "Starter", "price": "€49/mo", "features": ["Backtesting", "1 strategy", "Basic AI research"]},
-            {"name": "Pro", "price": "€149/mo", "features": ["AI research", "5 strategies", "Hyperopt", "Priority support"]},
-            {"name": "Institutional", "price": "€499/mo", "features": ["Live execution", "Dedicated AI agent", "API access", "Custom integrations"]},
-        ]
+        "url": f"/checkout-placeholder?plan={plan}&email={email}&name={name}"
     })
+
+@app.get('/checkout-placeholder')
+async def checkout_placeholder():
+    return HTMLResponse("""
+<!DOCTYPE html>
+<html>
+<head><title>Checkout</title></head>
+<body style="background:#0a0a0a;color:#f4f4f5;font-family:system-ui;padding:4rem;text-align:center;">
+  <h1>Stripe Integration Pending</h1>
+  <p>This will redirect to Stripe Checkout once configured.</p>
+  <p style="color:#a1a1aa;">Contact info@orazen.online to get early access.</p>
+</body>
+</html>
+    """)
 
 @app.get('/health')
 async def health():
