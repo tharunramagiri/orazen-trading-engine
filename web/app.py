@@ -3,7 +3,6 @@ from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
 import os
-import stripe
 import hmac
 import hashlib
 import json
@@ -22,18 +21,11 @@ app.add_middleware(
 BASE = Path('/home/tarun/orazen-trading-engine/web')
 (BASE / 'static').mkdir(exist_ok=True)
 
-# Stripe config
-stripe.api_key = os.getenv('STRIPE_SECRET_KEY', '')
-STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')
 TWENTY_WEBHOOK_SECRET = os.getenv('TWENTY_WEBHOOK_SECRET', '')
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN', '')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID', '5595319916')
 
-PRICES = {
-    'starter': os.getenv('STRIPE_PRICE_STARTER', ''),
-    'growth': os.getenv('STRIPE_PRICE_GROWTH', ''),
-    'scale': os.getenv('STRIPE_PRICE_SCALE', ''),
-}
+BETA_LEADS = BASE / 'static' / 'beta_leads.jsonl'
 
 # Logging
 logging.basicConfig(
@@ -46,46 +38,45 @@ logger = logging.getLogger('webhook')
 
 @app.get('/', response_class=HTMLResponse)
 async def landing():
-    return (BASE / 'index.html').read_text()
+    return (BASE / 'beta.html').read_text()
 
 
 @app.get('/pricing', response_class=HTMLResponse)
 async def pricing():
-    return (BASE / 'pricing.html').read_text()
+    return (BASE / 'beta.html').read_text()
 
 
-@app.post('/api/checkout')
-async def checkout(request: Request):
+@app.post('/api/beta-join')
+async def beta_join(request: Request):
     body = await request.json()
-    plan = body.get('plan', 'starter')
-    email = body.get('email', '')
-    name = body.get('name', '')
+    email = (body.get('email') or '').strip().lower()
+    if not email or '@' not in email:
+        return JSONResponse({'message': 'Please enter a valid email.'}, status_code=400)
 
-    if not stripe.api_key:
-        return JSONResponse({'error': 'Stripe not configured'}, status_code=500)
+    entry = {
+        'timestamp': datetime.utcnow().isoformat() + 'Z',
+        'email': email,
+        'source': 'engine.orazen.online',
+    }
+    with BETA_LEADS.open('a') as f:
+        f.write(json.dumps(entry) + '\n')
 
-    price_id = PRICES.get(plan)
-    if not price_id:
-        return JSONResponse({'error': 'Invalid plan'}, status_code=400)
+    if TELEGRAM_BOT_TOKEN:
+        try:
+            requests.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                json={'chat_id': TELEGRAM_CHAT_ID, 'text': f"New Orazen beta signup: {email}"},
+                timeout=10,
+            )
+        except Exception:
+            pass
 
-    try:
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{'price': price_id, 'quantity': 1}],
-            mode='subscription',
-            customer_email=email,
-            metadata={'plan': plan, 'contact_name': name},
-            success_url='https://engine.orazen.online/success',
-            cancel_url='https://engine.orazen.online/pricing',
-        )
-        return JSONResponse({'url': session.url})
-    except Exception as e:
-        return JSONResponse({'error': str(e)}, status_code=500)
+    return JSONResponse({'message': "You're on the list. We'll be in touch."})
 
 
 @app.get('/health')
 async def health():
-    return {'status': 'ok', 'engine': 'orazen', 'version': '2026.8-dev'}
+    return {'status': 'ok', 'engine': 'orazen', 'version': '2026.8-beta'}
 
 
 @app.post('/webhook/twenty')
@@ -109,7 +100,6 @@ async def twenty_webhook(request: Request):
 
     event_type = payload.get('eventType', 'unknown')
     data = payload.get('data', {})
-
     log_entry = {
         'timestamp': datetime.utcnow().isoformat() + 'Z',
         'event_type': event_type,
@@ -117,16 +107,19 @@ async def twenty_webhook(request: Request):
     }
     logger.info(json.dumps(log_entry))
 
-    if event_type in ('contact.created', 'contact.updated') and TELEGRAM_BOT_TOKEN:
-        contact = data.get('record', data)
-        name = contact.get('name', contact.get('firstName', 'New contact'))
-        email = contact.get('email', '')
-        text = f"CRM event: {event_type}\n{name}\n{email}"
-        requests.post(
-            f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
-            json={'chat_id': TELEGRAM_CHAT_ID, 'text': text},
-            timeout=10,
-        )
+    contact = data.get('record', data)
+    name = contact.get('name', contact.get('firstName', 'New contact'))
+    email = contact.get('email', '')
+
+    if TELEGRAM_BOT_TOKEN:
+        try:
+            requests.post(
+                f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage",
+                json={'chat_id': TELEGRAM_CHAT_ID, 'text': f"CRM event: {event_type}\n{name}\n{email}"},
+                timeout=10,
+            )
+        except Exception:
+            pass
 
     return JSONResponse({'ok': True})
 
@@ -136,10 +129,10 @@ async def success():
     return HTMLResponse("""
 <!DOCTYPE html>
 <html>
-<head><title>Checkout Successful</title></head>
+<head><title>Welcome to Orazen</title></head>
 <body style="background:#0a0a0a;color:#f4f4f5;font-family:system-ui;padding:4rem;text-align:center;">
-  <h1>Welcome to Orazen 🎉</h1>
-  <p>Check your email to get started.</p>
+  <h1>You're on the list 🎉</h1>
+  <p>We'll email you when your beta access is ready.</p>
 </body>
 </html>
     """)

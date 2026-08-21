@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orazen — Agentic AI Trading Engine</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: system-ui, sans-serif; background: #0a0a0a; color: #f4f4f5; }
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 2rem; max-width: 1200px; margin: 0 auto; }
+  h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+  .accent { color: #f97316; }
+  p.lead { font-size: 1.25rem; color: #a1a1aa; margin-top: 1.5rem; max-width: 640px; }
+  .beta-form { display: flex; gap: 0.75rem; margin-top: 2.5rem; flex-wrap: wrap; }
+  input[type="email"] { padding: 1rem 1.25rem; border-radius: 9999px; border: 1px solid #27272a; background: #0a0a0a; color: #f4f4f5; font-size: 1rem; min-width: 280px; }
+  button { padding: 1rem 1.75rem; border-radius: 9999px; border: none; background: #f97316; color: white; font-weight: 600; cursor: pointer; font-size: 1rem; }
+  .note { font-size: 0.875rem; color: #71717a; margin-top: 1rem; }
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>Trade with an <span class="accent">AI Agent</span></h1>
+  <p class="lead">Orazen is the agentic trading engine for BTC, ETH, and SOL. Early access is free during beta.</p>
+  <form class="beta-form" onsubmit="joinBeta(event)">
+    <input type="email" id="email" placeholder="you@example.com" required />
+    <button type="submit">Join Beta</button>
+  </form>
+  <p class="note">No credit card. No lock-in. Just email.</p>
+</div>
+<script>
+async function joinBeta(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const res = await fetch('/api/beta-join', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({email})
+  });
+  const data = await res.json();
+  alert(data.message || 'Joined beta!');
+}
+</script>
+</body>
+</html>
